@@ -1,0 +1,104 @@
+2018-04-27 11:32:18,295 ERROR: Exception on /printLabel [POST] [in /home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py:1753]
+Traceback (most recent call last):
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 2284, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1807, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1710, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1805, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1791, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/pi/inventory-container/flask-inventory/app/routes.py", line 83, in printLabel
+    pl.sendPrintData(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 20, in sendPrintData
+    labeldata = createESCpLabel(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 66, in createESCpLabel
+    string += item.ItemCodeDesc.encode('latin-1') + CRLF
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xbc in position 15: ordinal not in range(128)
+2018-04-27 11:34:25,222 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 11:34:37,024 ERROR: Exception on /printLabel [POST] [in /home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py:1753]
+Traceback (most recent call last):
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 2284, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1807, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1710, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1805, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1791, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/pi/inventory-container/flask-inventory/app/routes.py", line 83, in printLabel
+    pl.sendPrintData(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 20, in sendPrintData
+    labeldata = createESCpLabel(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 66, in createESCpLabel
+    string += item.ItemCodeDesc.encode('utf-8', errors='replace') + CRLF
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xc2 in position 15: ordinal not in range(128)
+2018-04-27 11:35:41,560 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 11:35:53,525 ERROR: Exception on /printLabel [POST] [in /home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py:1753]
+Traceback (most recent call last):
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 2284, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1807, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1710, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1805, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1791, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/pi/inventory-container/flask-inventory/app/routes.py", line 83, in printLabel
+    pl.sendPrintData(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 20, in sendPrintData
+    labeldata = createESCpLabel(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 67, in createESCpLabel
+    string += unicode(item.ItemCodeDesc, errors='replace') + CRLF
+TypeError: decoding Unicode is not supported
+2018-04-27 11:46:46,468 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 11:47:25,541 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 11:47:46,190 ERROR: Exception on /printLabel [POST] [in /home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py:1753]
+Traceback (most recent call last):
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 2284, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1807, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1710, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1805, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1791, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/pi/inventory-container/flask-inventory/app/routes.py", line 83, in printLabel
+    pl.sendPrintData(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 20, in sendPrintData
+    labeldata = createESCpLabel(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 70, in createESCpLabel
+    return string.encode()
+UnicodeEncodeError: 'ascii' codec can't encode character u'\xbc' in position 80: ordinal not in range(128)
+2018-04-27 11:48:54,163 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 11:50:06,640 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 11:52:48,122 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 12:27:13,097 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 12:39:49,016 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 12:49:44,412 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 12:50:28,592 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 12:50:41,315 ERROR: Exception on /inventory [GET] [in /home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py:1753]
+Traceback (most recent call last):
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 2284, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1807, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1710, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1805, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1791, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/pi/inventory-container/flask-inventory/app/routes.py", line 94, in inventory
+    if item is None: # Fail
+UnboundLocalError: local variable 'item' referenced before assignment
+2018-04-27 12:51:42,339 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 13:03:38,417 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]

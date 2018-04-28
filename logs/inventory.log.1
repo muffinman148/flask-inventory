@@ -1,0 +1,89 @@
+2018-04-27 13:03:44,832 ERROR: Exception on /inventory [POST] [in /home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py:1753]
+Traceback (most recent call last):
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 2284, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1807, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1710, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1805, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1791, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/pi/inventory-container/flask-inventory/app/routes.py", line 92, in inventory
+    measurement = Measurements.query.filter_by(partNumber=itemCode.data).first()
+NameError: global name 'Measurements' is not defined
+2018-04-27 13:04:09,634 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 13:04:18,845 ERROR: Exception on /inventory [POST] [in /home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py:1753]
+Traceback (most recent call last):
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 2284, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1807, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1710, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1805, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1791, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/pi/inventory-container/flask-inventory/app/routes.py", line 92, in inventory
+    measurement = Measurements.query.filter_by(partNumber=itemCode.data).first()
+NameError: global name 'itemCode' is not defined
+2018-04-27 13:04:51,102 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 13:10:12,157 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 13:10:49,754 ERROR: Exception on /inventory [POST] [in /home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py:1753]
+Traceback (most recent call last):
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 2284, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1807, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1710, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1805, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1791, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/pi/inventory-container/flask-inventory/app/routes.py", line 102, in inventory
+    flash('The last count was: ' + measurement.partCount)
+TypeError: cannot concatenate 'str' and 'long' objects
+2018-04-27 13:11:28,656 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 13:16:00,876 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 13:24:22,305 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 13:26:10,342 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 13:26:44,951 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 13:26:46,645 ERROR: Exception on /inventory [GET] [in /home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py:1753]
+Traceback (most recent call last):
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 2284, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1807, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1710, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1805, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1791, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/pi/inventory-container/flask-inventory/app/routes.py", line 107, in inventory
+    return render_template('inventory.html', title='Inventory', form=form)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/templating.py", line 135, in render_template
+    context, ctx.app)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/templating.py", line 117, in _render
+    rv = template.render(context)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/jinja2/environment.py", line 1008, in render
+    return self.environment.handle_exception(exc_info, True)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/jinja2/environment.py", line 780, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/app/templates/inventory.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/home/pi/inventory-container/flask-inventory/app/templates/base.html", line 30, in top-level template code
+    {% block content %}{% endblock %}
+  File "/home/pi/inventory-container/flask-inventory/app/templates/inventory.html", line 16, in block "content"
+    <p>{{ form.something() }}</p>
+UndefinedError: 'app.forms.InventoryForm object' has no attribute 'something'
+2018-04-27 13:27:16,946 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 13:27:44,580 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 15:08:07,695 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 15:20:28,721 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 15:22:26,931 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 15:25:49,753 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 16:18:46,698 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]

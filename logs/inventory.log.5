@@ -1,0 +1,116 @@
+2018-04-27 10:36:13,563 ERROR: Exception on /printLabel [POST] [in /home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py:1753]
+Traceback (most recent call last):
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 2284, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1807, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1710, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1805, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1791, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/pi/inventory-container/flask-inventory/app/routes.py", line 83, in printLabel
+    pl.sendPrintData(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 54, in sendPrintData
+    labeldata = createESCpLabel(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 62, in createESCpLabel
+    string = ESPCMODE + INIT + LANDSCAPE + FONT_HELSINKI_OL
+NameError: global name 'ESPCMODE' is not defined
+2018-04-27 10:45:23,884 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 10:47:56,953 ERROR: Exception on /printLabel [POST] [in /home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py:1753]
+Traceback (most recent call last):
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 2284, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1807, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1710, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1805, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1791, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/pi/inventory-container/flask-inventory/app/routes.py", line 83, in printLabel
+    pl.sendPrintData(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 19, in sendPrintData
+    labeldata = createESCpLabel(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 64, in createESCpLabel
+    string += cleanString(item.ItemCodeDesc) + CRLF
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 94, in cleanString
+    result = pattern.sub(lambda x: d[x.group()], s)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 94, in <lambda>
+    result = pattern.sub(lambda x: d[x.group()], s)
+NameError: global name 'd' is not defined
+2018-04-27 10:49:05,641 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 10:49:14,342 ERROR: Exception on /printLabel [POST] [in /home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py:1753]
+Traceback (most recent call last):
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 2284, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1807, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1710, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1805, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1791, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/pi/inventory-container/flask-inventory/app/routes.py", line 83, in printLabel
+    pl.sendPrintData(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 19, in sendPrintData
+    labeldata = createESCpLabel(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 64, in createESCpLabel
+    string += cleanString(item.ItemCodeDesc) + CRLF
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 94, in cleanString
+    result = pattern.sub(lambda x: fractions[x.group()], s)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 94, in <lambda>
+    result = pattern.sub(lambda x: fractions[x.group()], s)
+KeyError: u'\xbc'
+2018-04-27 10:51:49,703 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 10:52:01,636 ERROR: Exception on /printLabel [POST] [in /home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py:1753]
+Traceback (most recent call last):
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 2284, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1807, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1710, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1805, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1791, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/pi/inventory-container/flask-inventory/app/routes.py", line 83, in printLabel
+    pl.sendPrintData(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 19, in sendPrintData
+    labeldata = createESCpLabel(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 64, in createESCpLabel
+    string += cleanString(item.ItemCodeDesc) + CRLF
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 97, in cleanString
+    result = pattern.sub(lambda x: fractions[x.group()], s)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 97, in <lambda>
+    result = pattern.sub(lambda x: fractions[x.group()], s)
+KeyError: u'\xbc'
+2018-04-27 10:52:32,952 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
+2018-04-27 10:52:42,655 ERROR: Exception on /printLabel [POST] [in /home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py:1753]
+Traceback (most recent call last):
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 2284, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1807, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1710, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1805, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/pi/inventory-container/flask-inventory/venv/local/lib/python2.7/site-packages/flask/app.py", line 1791, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/pi/inventory-container/flask-inventory/app/routes.py", line 83, in printLabel
+    pl.sendPrintData(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 19, in sendPrintData
+    labeldata = createESCpLabel(item)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 64, in createESCpLabel
+    string += cleanString(item.ItemCodeDesc) + CRLF
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 97, in cleanString
+    result = pattern.sub(lambda x: fractions[x.group()], s)
+  File "/home/pi/inventory-container/flask-inventory/app/printlabel.py", line 97, in <lambda>
+    result = pattern.sub(lambda x: fractions[x.group()], s)
+KeyError: u'\xbc'
+2018-04-27 10:53:17,190 INFO: AMMK Inventory System startup [in /home/pi/inventory-container/flask-inventory/app/__init__.py:44]
