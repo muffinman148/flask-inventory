@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Inventory</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.itemCode.label }}<br>
+            {{ form.itemCode(size=32) }}<br>
+            {% for error in form.itemCode.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+        <p>{{ form.weighItem() }}</p>
+    </form>
+{% endblock %}
