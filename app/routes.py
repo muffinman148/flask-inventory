@@ -9,16 +9,6 @@ import printlabel as pl
 @app.route('/index')
 @login_required
 def index():
-    posts = [
-            {
-                'author' : {'username' : 'John'},
-                'body'   : 'Beautiful day in Portland'
-            },
-            {
-                'author' : {'username' : 'Susan'},
-                'body'   : 'Stuffs yes.'
-            }
-            ]
     return render_template('index.html', title='Home Page', posts=posts)
 
 @app.route('/login', methods=['GET','POST'])
