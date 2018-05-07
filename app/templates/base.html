@@ -32,6 +32,9 @@
                     {% if current_user.is_anonymous %}
                     <li><a href="{{ url_for('login') }}">Login</a></li>
                     {% else %}
+                    {% if current_user.is_admin() %}
+                    <li><a href="{{ url_for('users') }}">Manage</a></li>
+                    {% endif %}
                     <li><a href="{{ url_for('inventory') }}">Inventory</a></li>
                     <li><a href="{{ url_for('printLabel') }}">Print label</a></li>
                     <li><a href="{{ url_for('logout') }}">Logout</a></li>
@@ -40,6 +43,55 @@
             </div> <!-- End navbar-default -->
         </div> <!-- End container -->
     </nav>
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{# super() is needed to put scripts after Bootstrap jquery call #}
+
+<script>
+
+function weighItem1() {
+    $.getJSON('/weighItem', {
+        weight: $('input[name="weight"]').val(),
+    }, function(data) {
+        $("#result").text(data.result);
+    });
+}
+
+function weighItem() {
+    $.post('/weighItem', {
+    }).done(function(response) {
+        $("#result").text(response.weight);
+        alert(response.weight);
+    }).fail(function() {
+        $.text("Error: Could not contact server.");
+    });
+}
+
+$(function()
+{
+    $('#clickme').click(function(){
+        alert('Im going to start processing');
+
+        $.ajax({
+            url: "/ajaxpost.py",
+            type: "post",
+            datatype:"json",
+            data: {'key':'value','key2':'value2'},
+            success: function(response){
+                alert(response.message);
+                alert(response.keys);
+            }
+        });
+    });
+});
+</script>
 {% endblock %}
 
 {% block content %}

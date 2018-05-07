@@ -1,15 +1,23 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, jsonify
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, PrintLabelForm, InventoryForm
+from app.forms import LoginForm, RegistrationForm, PrintLabelForm, \
+    InventoryForm1, InventoryForm2
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Items, Measurements
+# from app.models import User, Items, Measurements, UserTable
+from app.models import *
 import printlabel as pl
+import scale as s
+from decorator import requires_access_level
+
+item = Items
+measurement = Measurements
+
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
-    return render_template('index.html', title='Home Page', posts=posts)
+    return render_template('index.html', title='Home Page')
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -45,20 +53,22 @@ def page_not_found(e):
     return redirect(url_for('login'))
 
 @app.route('/register', methods=['GET', 'POST'])
+@login_required
+@requires_access_level(ACCESS['admin'])
 def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data)
+        user = User(username=form.username.data, email=form.email.data, \
+                access=form.access.data)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations, you are now a registered user!')
-        return redirect(url_for('login'))
+        flash('User registered.')
+        return redirect(url_for('users'))
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/printLabel', methods=['GET', 'POST'])
+@login_required
 def printLabel():
     form = PrintLabelForm()
     if form.validate_on_submit(): # Checks form submission syntax validity
@@ -75,28 +85,43 @@ def printLabel():
     return render_template('printLabel.html', title='Print Labels', form=form)
 
 @app.route('/inventory', methods=['GET', 'POST'])
+@login_required
 def inventory():
-    form = InventoryForm()
+    form = InventoryForm1()
     # if form.validate_on_submit(): # Checks form submission syntax validity
     if "submit" in request.form: # Checks form submission syntax validity
         item = Items.query.filter_by(ItemCode=form.itemCode.data).first()
         measurement = Measurements.query.filter_by(partNumber=form.itemCode.data).first()
 
         # Checks if part number field is correct
-        if item is None: # Fail
-            flash('No input. Please input a part number.')
+        if item is None: # No input for the field
+            flash('Item not on file.')
             return redirect(url_for('inventory'))
-        elif measurement is None: # Success
+        elif measurement is None: # No current measurements available
             flash('No previous measurements found for, ' + item.ItemCodeDesc + '.')
-            return redirect(url_for('inventory'))
-        else:
-            flash('The last count was: ' + str(measurement.partCount) + '.')
-            flash('Place item on the scale.')
-            # flash('Printing Label ' + form.itemCode.data + '.' + item.ItemCodeDesc)
-            # pl.sendPrintData(item)
-    elif "weighItem" in request.form:
-        flash('Place item onto scale.')
-        # db.session.add(user)
-        # db.session.commit()
-
+            flash('Place empty container on scale.')
+            # while container is not containerChange and keyboardIdle:
+            #     do await item data input
+        else: # Generate Item Report
+            flash('Place bin to be counted.')
+            # User clicks "Weigh Item"
+            
     return render_template('inventory.html', title='Inventory', form=form)
+
+@app.route('/weighItem', methods=['GET', 'POST'])
+@login_required
+def weighItem():
+    weight = s.runScale("getWeight", 0)
+    print(weight)
+    print(item.ItemCodeDesc)
+    print(measurement.pieceWeight)
+    return jsonify(weight=weight)
+
+@app.route('/users', methods=['GET', 'POST'])
+@login_required
+@requires_access_level(ACCESS['admin'])
+def users():
+    """ Creates admin user's panel."""
+    table = UserTable(User.query.all())
+    print("We did it!")
+    return render_template('users.html', title='User\'s table', table=table)

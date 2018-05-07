@@ -1,7 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, \
+        SelectField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from app.models import User, Items, Measurements
+import re
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -11,11 +13,13 @@ class LoginForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired(), Email()])
+    email = StringField('Email', validators=[DataRequired()])
+    access = SelectField(u'User Access Level', \
+            choices=[('guest','guest'), ('user','user'), ('admin','admin')])
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField(
         'Repeat Password', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Register')
+    submit = SubmitField('Register User')
 
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
@@ -26,6 +30,8 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
+        if not re.match("^\S+@.+\..+", email.data): # Extremely loose regex
+            raise ValidationError('Invalid email address.')
 
 class PrintLabelForm(FlaskForm):
     itemCode = StringField('Part Number', validators=[DataRequired()])
@@ -36,10 +42,10 @@ class PrintLabelForm(FlaskForm):
         if item is None:
             raise ValidationError('Item not found on record. Label cannot be printed.')
 
-class InventoryForm(FlaskForm):
-    itemCode = StringField('Part Number', validators=[DataRequired()])
+class InventoryForm1(FlaskForm):
+    itemCode = StringField('Part Number', validators=[DataRequired()],
+            render_kw={'autofocus': True})
     submit = SubmitField('Submit')
-    weighItem = SubmitField('Weigh Item')
 
     def validate_itemCode(self, itemCode):
         item = Items.query.filter_by(ItemCode=itemCode.data).first()
@@ -50,3 +56,8 @@ class InventoryForm(FlaskForm):
         measurement = Measurements.query.filter_by(partNumber=itemCode.data).first()
         if measurement is None:
             raise ValidationError('No measurements on record.')
+
+class InventoryForm2(FlaskForm):
+    itemCode = StringField('Part Number', validators=[DataRequired()],
+            render_kw={'autofocus': True})
+    weighItem = SubmitField('Weigh Item')
