@@ -1,3 +1,9 @@
+"""
+This file initializes the inventory app. The database, login manager, and
+bootstrap framework are all initialized here. This file also sends errors via
+email to the administrator.
+"""
+
 from flask import Flask
 from config import Config
 from flask_sqlalchemy import SQLAlchemy

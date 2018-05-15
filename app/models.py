@@ -1,3 +1,7 @@
+"""
+Defines all sqlalchemy models and tables.
+"""
+
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date
 from app import db, login
@@ -11,6 +15,13 @@ ACCESS = {
 }
 
 class User(UserMixin, db.Model):
+    """Defines a "User" table.
+
+    Args:
+        UserMixin: A standard flask-login classification for typical user
+        parameters.
+        db.Model: Baseclass for all SQLAlchemy instances.
+    """
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
@@ -18,29 +29,53 @@ class User(UserMixin, db.Model):
     access = db.Column(db.String(128))
 
     def __repr__(self):
+        """Displays user username."""
+
         return '<User {}>'.format(self.username)    
 
     def set_password(self, password):
+        """Sets password for provided user."""
+
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
+        """Validates provided password."""
+
         return check_password_hash(self.password_hash, password)
 
     @login.user_loader
     def load_user(id):
+        """Checks if provided id is valid."""
+
         return User.query.get(int(id))
 
     def is_admin(self):
+        """Set's user access to admin."""
+
         return self.access == ACCESS['admin']
 
     def allowed(self, access_level):
+        """Evaluates user access level."""
+
         return self.access >= access_level
 
 class UserTable(Table):
+    """Creates framework for User table.
+    
+    Args:
+        Table: Baseclass from flask-table.
+    """
+
     username = Col('Username')
     email = Col('Email')
 
 class Measurements(db.Model):
+    """Defines a "Measurements" table
+
+    Args:
+        db.Model: Baseclass for all SQLAlchemy instances.
+    """
+
     id = db.Column(db.Integer, primary_key=True)
     warehouseCode = db.Column(db.String(3))
     partNumber = db.Column(db.String(15))
@@ -53,13 +88,27 @@ class Measurements(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
+        """Displays item part number."""
+
         return '<Measurements {}>'.format(self.partNumber)
 
 class MeasurementsTable(Table):
+    """Creates framework for Measurements table.
+    
+    Args:
+        Table: Baseclass from flask-table.
+    """
+
     partNumber = Col('Part Number')
     partCount = Col('Part Count')
 
 class Items(db.Model): # rpi_inv_ci_item
+    """Defines an "Items" table.
+
+    Args:
+        db.Model: Baseclass for all SQLAlchemy instances.
+    """
+
     ItemCode = db.Column(db.String(30), primary_key=True)
     ItemType = db.Column(db.String(1))
     ItemCodeDesc = db.Column(db.String(30))

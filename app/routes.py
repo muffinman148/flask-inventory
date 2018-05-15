@@ -1,3 +1,7 @@
+"""
+This file handles the Views for the inventory system. 
+"""
+
 from flask import render_template, flash, redirect, url_for, \
         request, jsonify, session
 from app import app, db
@@ -15,10 +19,14 @@ from pprint import pprint
 @app.route('/index')
 @login_required
 def index():
+    """Returns the home page."""
+
     return render_template('index.html', title='Home Page')
 
 @app.route('/login', methods=['GET','POST'])
 def login():
+    """Returns the login page. This page authenticates users."""
+
     if current_user.is_authenticated: # Redirects logged in users
         return redirect(url_for('index'))
     form = LoginForm()
@@ -43,17 +51,23 @@ def login():
 
 @app.route('/logout')
 def logout():
+    """Logs user out. Redirects to login page."""
+
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 @app.errorhandler(401)
 def page_not_found(e):
+    """Redirects users without proper access to login page."""
+
     return redirect(url_for('login'))
 
 @app.route('/register', methods=['GET', 'POST'])
 @login_required
 @requires_access_level(ACCESS['admin'])
 def register():
+    """Allows an admin user the ability to add other users the system."""
+
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(username=form.username.data, email=form.email.data, \
@@ -68,6 +82,9 @@ def register():
 @app.route('/printLabel', methods=['GET', 'POST'])
 @login_required
 def printLabel():
+    """Print label form that allows user to print to Brother QL-720NW
+    printer."""
+
     form = PrintLabelForm()
     if form.validate_on_submit(): # Checks form submission syntax validity
         item = Items.query.filter_by(ItemCode=form.itemCode.data).first()
@@ -85,6 +102,9 @@ def printLabel():
 @app.route('/inventory', methods=['GET', 'POST'])
 @login_required
 def inventory():
+    """Inventory form to check if item is on file. """
+
+    # TODO Fix form logic
     form = InventoryForm1()
     # if form.validate_on_submit(): # Checks form submission syntax validity
     mode = ""
@@ -123,6 +143,14 @@ def inventory():
 @app.route('/inventory/<mode>-<item>', methods=['GET', 'POST'])
 @login_required
 def inventoryItem(item, mode):
+    """Returns item's inventory page.
+
+    Args:
+        item (str): Part number name.
+        mode (str): Mode that determines what method is performed on data.
+    """
+
+    # TODO Finish logic for tare and count methods
     if mode == "tare":
         weight = session.get('weight', None)
         if weight:
@@ -139,6 +167,8 @@ def inventoryItem(item, mode):
 @app.route('/weighItem', methods=['GET', 'POST'])
 @login_required
 def weighItem():
+    """Returns json of weight of an item."""
+
     weight = s.runScale("getWeight", 0)
     # part = Measurements(partNumber=item.partNumber, pieceWeight=weight)
     # db.session.update().values(part)
@@ -150,6 +180,7 @@ def weighItem():
 @login_required
 @requires_access_level(ACCESS['admin'])
 def users():
-    """ Creates admin user's panel."""
+    """Creates admin user's panel."""
+
     table = UserTable(User.query.all())
     return render_template('users.html', title='User\'s table', table=table)

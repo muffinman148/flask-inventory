@@ -1,4 +1,8 @@
 ### Import Python Modules
+"""
+Print label file that handles Brother QL-720NW interaction.
+"""
+
 # -*- coding: utf-8 -*-
 import datetime
 import socket
@@ -11,6 +15,8 @@ printer_port = 9100
 
 
 def sendPrintData(item):
+    """Sends print data to Brother QL-720NW."""
+
     # Create a TCP/IP socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -24,6 +30,16 @@ def sendPrintData(item):
     
 # Creates Label
 def createESCpLabel(item):
+    """Creates hex string for Brother QL-720NW that is converted into a
+    label.
+    
+    Args:
+        item (str): Item label requested for print.
+
+    Returns:
+        string: Encoded string that is readable by Brother QL-720NW printer.
+    """
+
     # The following codes are compatible with a Brother QL-720NW
 
     NUL                  = chr(0x00)
@@ -75,6 +91,7 @@ def createESCpLabel(item):
     print(':'.join(x.encode('hex') for x in encoded_str))
     return encoded_str
 
+# TODO Fix vulgar fraction handling.
 
 # UTF-8 Compatible Print
 def cleanString(s):

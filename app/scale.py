@@ -1,3 +1,9 @@
+"""
+Reads from hx711 amplifier and pair loadcell to provide a number of weight
+values. These weight values are compiled to a list where an average is
+cultivated for external processes.
+"""
+
 import RPi.GPIO as GPIO
 import time
 import sys
@@ -5,12 +11,22 @@ from numpy import mean
 from hx711py.hx711 import HX711
 
 def cleanAndExit():
+    """Legacy function used for safely quiting scale read process."""
     print "Cleaning..."
     GPIO.cleanup()
     print "Bye!"
     sys.exit()
 
 def requestScaleData(weight_list):
+    """Requests data from scale and produces a list.
+
+    Args:
+        weight_list (list): List of all float weight values.
+
+    Returns:
+        list: Float value list.
+    """
+
     hx = HX711(5, 6)
 
     hx.set_reading_format("LSB", "MSB")
@@ -43,13 +59,25 @@ def requestScaleData(weight_list):
     return weight_list
 
 def runScale(mode, weight):
+    """Runs the scale to return a weight.
+
+    Args:
+        mode (str): Mode of the operation.
+        weight (float): Weight of item on scale.
+
+    Returns:
+        float: Overall weight of the item.
+    """
+
     if mode == "getWeight":
         weight_list = []
         requestScaleData(weight_list)
         weight = mean(weight_list)
     elif mode == "getTare":
-        print("Tare mode not setup")
-        weight = 777
+        weight_list = []
+        requestScaleData(weight_list)
+        weight = mean(weight_list)
+    # TODO Have this return a JSON. ex: {weight : 10.4}
     return weight
 
 # Use this to run individually
