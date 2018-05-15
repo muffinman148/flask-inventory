@@ -1,6 +1,7 @@
 import RPi.GPIO as GPIO
 import time
 import sys
+from numpy import mean
 from hx711py.hx711 import HX711
 
 def cleanAndExit():
@@ -9,7 +10,7 @@ def cleanAndExit():
     print "Bye!"
     sys.exit()
 
-def requestScaleData():
+def requestScaleData(weight_list):
     hx = HX711(5, 6)
 
     hx.set_reading_format("LSB", "MSB")
@@ -25,41 +26,32 @@ def requestScaleData():
     hx.reset()
     hx.tare()
 
-    while len(weight_list) < 100:
-        try:
-            # These three lines are usefull to debug wether to use MSB or LSB in the reading formats
-            # for the first parameter of "hx.set_reading_format("LSB", "MSB")".
-            # Comment the two lines "val = hx.get_weight(5)" and "print val" and uncomment the three lines to see what it prints.
-            #np_arr8_string = hx.get_np_arr8_string()
-            #binary_string = hx.get_binary_string()
-            #print binary_string + " " + np_arr8_string
-            
-            # Prints the weight. Comment if you're debbuging the MSB and LSB issue.
-            val = hx.get_weight(5)
-            weight_list.append(val)
+    while len(weight_list) < 5:
+        # These three lines are usefull to debug wether to use MSB or LSB in the reading formats
+        # for the first parameter of "hx.set_reading_format("LSB", "MSB")".
+        # Comment the two lines "val = hx.get_weight(5)" and "print val" and uncomment the three lines to see what it prints.
+        # np_arr8_string = hx.get_np_arr8_string()
+        # binary_string = hx.get_binary_string()
+        # print binary_string + " " + np_arr8_string
+        
+        # Prints the weight. Comment if you're debbuging the MSB and LSB issue.
+        val = hx.get_weight(5)
+        weight_list.append(int(val))
 
-            hx.power_down()
-            hx.power_up()
-            time.sleep(0.01)
-        except (KeyboardInterrupt, SystemExit):
-            cleanAndExit()
+        hx.power_down()
+        hx.power_up()
     return weight_list
 
-def average(a):
-    # TODO Replace with Kevin's Average Function
-    average = a / 100;
+def runScale(mode, weight):
+    if mode == "getWeight":
+        weight_list = []
+        requestScaleData(weight_list)
+        weight = mean(weight_list)
+    elif mode == "getTare":
+        print("Tare mode not setup")
+        weight = 777
+    return weight
 
-def main(mode, weight):
-    while True:
-        try:
-            if mode == "getWeight":
-                requestScaleData(weight_list = [])
-                weight = average(weight_list)
-                print weight
-            elif mode == "getTare":
-                val = 0
-        except (KeyboardInterrupt, SystemExit):
-            cleanAndExit()
-
-if __name__ == "__main__":
-    main("getWeight", 0)
+# Use this to run individually
+# if __name__ == "__runSacle__":
+#     runScale("getWeight", 0)
