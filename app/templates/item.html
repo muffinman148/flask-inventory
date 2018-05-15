@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+
+// TODO Fix this function to replace "base.html" script
+$(document).ready(function(){
+    $("button").click(function(){
+        $.ajax({
+            url: "/weighItem", 
+            type: 'POST',
+            success: function(result){
+                if (mode == "tare") {
+                    $("#result").text(result.weight);
+                } else if (mode == "count") {
+                    $("#result").text(result.weight);
+                }
+            },
+            error: function(result){
+                console.log("This did not parse correctly: " + result);
+            }
+        });
+    });
+});
+
+</script>
+{% endblock %}
+
+{% block app_content %}
+<h1>Item: {{ item }}</h1>
+    {% if mode == "tare" %}
+    <p>Place EMPTY container on scale</p>
+    <a href="javascript:weighItem()" id="weighItem" class="btn btn-default">Tare</a>
+    {% elif mode == "count" %}
+    <p>Place container on scale for COUNTING</p>
+    <a href="javascript:weighItem()" id="weighItem"class="btn btn-default">Count</a>
+    {% endif %}
+    <p id="result"> </p>
+    {{ table }}
+{% endblock %}
