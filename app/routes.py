@@ -75,7 +75,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('User registered.')
+        flash('User registered.', 'success')
         return redirect(url_for('users'))
     return render_template('register.html', title='Register', form=form)
 
@@ -91,10 +91,10 @@ def printLabel():
 
         # Checks if part number field is correct
         if item is None:
-            flash('No input. Please input a part number.')
+            flash('No input. Please input a part number.', 'warning')
             return redirect(url_for('printLabel'))
         else:
-            flash('Printing Label ' + form.itemCode.data + '.' + item.ItemCodeDesc)
+            flash('Printing Label ' + form.itemCode.data + '.' + item.ItemCodeDesc, 'success')
             pl.sendPrintData(item)
 
     return render_template('printLabel.html', title='Print Labels', form=form)
@@ -154,7 +154,7 @@ def inventoryItem(item, mode):
     if mode == "tare":
         weight = session.get('weight', None)
         if weight:
-            flash("We have the weight: " + str(weight) + ".")
+            flash("We have the weight: " + str(weight) + ".", 'info')
         table = MeasurementsTable(Measurements.query.filter_by(partNumber=item))
         return render_template('item.html', title=item, item=item, mode=mode, table=table)
     elif mode == "count":
@@ -172,8 +172,7 @@ def weighItem():
     weight = s.runScale("getWeight", 0)
     # part = Measurements(partNumber=item.partNumber, pieceWeight=weight)
     # db.session.update().values(part)
-    session['weight'] = weight
-    print( "The session weight is: " + session['weight'])
+    print( "The session weight is: " + str(session['weight']))
     return jsonify(weight=weight)
 
 @app.route('/users', methods=['GET', 'POST'])
