@@ -1,4 +1,5 @@
-from flask import render_template, flash, redirect, url_for, request, jsonify
+from flask import render_template, flash, redirect, url_for, \
+        request, jsonify, session
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, PrintLabelForm, \
     InventoryForm1, InventoryForm2
@@ -8,10 +9,7 @@ from app.models import *
 import printlabel as pl
 import scale as s
 from decorator import requires_access_level
-
-item = Items
-measurement = Measurements
-
+from pprint import pprint
 
 @app.route('/')
 @app.route('/index')
@@ -89,32 +87,63 @@ def printLabel():
 def inventory():
     form = InventoryForm1()
     # if form.validate_on_submit(): # Checks form submission syntax validity
+    mode = ""
     if "submit" in request.form: # Checks form submission syntax validity
         item = Items.query.filter_by(ItemCode=form.itemCode.data).first()
         measurement = Measurements.query.filter_by(partNumber=form.itemCode.data).first()
 
         # Checks if part number field is correct
         if item is None: # No input for the field
-            flash('Item not on file.')
-            return redirect(url_for('inventory'))
+            flash('Item not on file.', 'warning')
+            state = "noitem"
+            return redirect(url_for('inventory', state=state))
         elif measurement is None: # No current measurements available
-            flash('No previous measurements found for, ' + item.ItemCodeDesc + '.')
-            flash('Place empty container on scale.')
+            flash('No previous measurements found for, ' + item.ItemCodeDesc + '.', 'warning')
+            flash('Place empty container on scale.', 'info')
+            mode = "tare"
             # while container is not containerChange and keyboardIdle:
             #     do await item data input
+            return redirect(url_for('inventoryItem', item=form.itemCode.data, mode=mode))
         else: # Generate Item Report
-            flash('Place bin to be counted.')
             # User clicks "Weigh Item"
+            flash('Place bin to be counted.', 'info')
+            mode = "count"
+            # weight = s.runScale("getWeight", 0)
+            return redirect(url_for('inventoryItem', item=form.itemCode.data, mode=mode))
+    # elif "weighitem" in request.form:
+    #     pass
+    # if form.itemCode.data:
+    #     weight = s.runScale("getWeight", 0)
+    #     flash('The weight is ' + str(weight))
+    #     print(jsonify(weight=weight))
+
             
     return render_template('inventory.html', title='Inventory', form=form)
+
+@app.route('/inventory/<mode>-<item>', methods=['GET', 'POST'])
+@login_required
+def inventoryItem(item, mode):
+    if mode == "tare":
+        weight = session.get('weight', None)
+        if weight:
+            flash("We have the weight: " + str(weight) + ".")
+        table = MeasurementsTable(Measurements.query.filter_by(partNumber=item))
+        return render_template('item.html', title=item, item=item, mode=mode, table=table)
+    elif mode == "count":
+        table = MeasurementsTable(Measurements.query.filter_by(partNumber=item))
+        return render_template('item.html', title=item, item=item, mode=mode, table=table)
+    else:
+        flash('Illegal mode: "' + mode + '" Contact administrator.', 'danger')
+        return redirect(url_for('inventory'))
 
 @app.route('/weighItem', methods=['GET', 'POST'])
 @login_required
 def weighItem():
     weight = s.runScale("getWeight", 0)
-    print(weight)
-    print(item.ItemCodeDesc)
-    print(measurement.pieceWeight)
+    # part = Measurements(partNumber=item.partNumber, pieceWeight=weight)
+    # db.session.update().values(part)
+    session['weight'] = weight
+    print( "The session weight is: " + session['weight'])
     return jsonify(weight=weight)
 
 @app.route('/users', methods=['GET', 'POST'])
@@ -123,5 +152,4 @@ def weighItem():
 def users():
     """ Creates admin user's panel."""
     table = UserTable(User.query.all())
-    print("We did it!")
     return render_template('users.html', title='User\'s table', table=table)
