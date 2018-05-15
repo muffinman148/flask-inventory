@@ -37,8 +37,8 @@ class User(UserMixin, db.Model):
         return self.access >= access_level
 
 class UserTable(Table):
-    username = Col('username')
-    email = Col('email')
+    username = Col('Username')
+    email = Col('Email')
 
 class Measurements(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -54,6 +54,10 @@ class Measurements(db.Model):
 
     def __repr__(self):
         return '<Measurements {}>'.format(self.partNumber)
+
+class MeasurementsTable(Table):
+    partNumber = Col('Part Number')
+    partCount = Col('Part Count')
 
 class Items(db.Model): # rpi_inv_ci_item
     ItemCode = db.Column(db.String(30), primary_key=True)
