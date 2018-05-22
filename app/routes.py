@@ -3,17 +3,22 @@ This file handles the Views for the inventory system.
 """
 
 from flask import render_template, flash, redirect, url_for, \
-        request, jsonify, session
+        request, jsonify, session, send_from_directory
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, PrintLabelForm, \
     InventoryForm1, InventoryForm2
 from flask_login import current_user, login_user, logout_user, login_required
-# from app.models import User, Items, Measurements, UserTable
 from app.models import *
 import printlabel as pl
 import scale as s
 from decorator import requires_access_level
 from pprint import pprint
+
+import os 
+@app.route('/favicon.ico') 
+def favicon(): 
+    return send_from_directory(os.path.join(app.root_path, 'static'),\
+            'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route('/')
 @app.route('/index')
@@ -121,8 +126,6 @@ def inventory():
             flash('No previous measurements found for, ' + item.ItemCodeDesc + '.', 'warning')
             flash('Place empty container on scale.', 'info')
             mode = "tare"
-            # while container is not containerChange and keyboardIdle:
-            #     do await item data input
             return redirect(url_for('inventoryItem', item=form.itemCode.data, mode=mode))
         else: # Generate Item Report
             # User clicks "Weigh Item"
@@ -130,13 +133,6 @@ def inventory():
             mode = "count"
             # weight = s.runScale("getWeight", 0)
             return redirect(url_for('inventoryItem', item=form.itemCode.data, mode=mode))
-    # elif "weighitem" in request.form:
-    #     pass
-    # if form.itemCode.data:
-    #     weight = s.runScale("getWeight", 0)
-    #     flash('The weight is ' + str(weight))
-    #     print(jsonify(weight=weight))
-
             
     return render_template('inventory.html', title='Inventory', form=form)
 
@@ -150,6 +146,7 @@ def inventoryItem(item, mode):
         mode (str): Mode that determines what method is performed on data.
     """
 
+    flash('Current mode is: ' + mode, 'info')
     # TODO Finish logic for tare and count methods
     if mode == "tare":
         weight = session.get('weight', None)

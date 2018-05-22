@@ -4,6 +4,11 @@
     {% if title %}{{title}} - AMMK Inventory System{% else %}Welcome to AMMK Inventory System{% endif %}
 {% endblock %}
 
+{% block head %}
+    {{ super() }} {# The following is appended to the "head". #}
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+{% endblock %}
+
 {% block navbar %}
     <nav class="navbar navbar-default">
         <div class="container">
