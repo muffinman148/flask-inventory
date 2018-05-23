@@ -191,6 +191,15 @@ def users():
 @login_required
 @requires_access_level(ACCESS['admin'])
 def deleteUser(username):
+    """Deletes user if not current user
+    
+    Args:
+        username (obj): Username object to delete
+    """
+
+    if str(username) in str(current_user):
+        flash('You cannot delete your own account!', 'warning')
+        return redirect(url_for('users'))
     user = User.query.filter_by(username=username).first()
     db.session.delete(user)
     db.session.commit()

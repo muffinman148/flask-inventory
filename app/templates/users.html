@@ -2,7 +2,7 @@
 
 {% block head %}
 {{ super() }}
-<meta id="my-data" data-name="{{current_user}}">
+<meta id="my-data" content="{{current_user}}">
 {% endblock %}
 
 {% block scripts %}
@@ -12,11 +12,6 @@
 function toggleDelete() {
     $("td:nth-child(4),th:nth-child(4)").toggle();
 };
-
-$(document).ready(function() {
-    /*var userVar = $('#my-data').data().toString();
-    $('a[href*="' + userVar + '"]').contents().unwrap(); */
-});
 
 /* Dynamically adds Ids to all "Delete" options in UserTable */
 $(document).ready(function() {
@@ -28,6 +23,14 @@ $(document).ready(function() {
         $(this).removeClass('myclass'); 
         i++;
     });
+});
+
+/* Prevents User from deleting their own account */
+$(document).ready(function() {
+    var re = new RegExp('<User ([a-zA-z]+)>');
+    var userVar = $('#my-data').attr("content");
+    var matches = re.exec(userVar);
+    $("#deleteUser-" + matches[1]).contents().unwrap();
 });
 
 </script>
