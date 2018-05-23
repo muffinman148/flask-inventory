@@ -5,8 +5,9 @@ Defines all sqlalchemy models and tables.
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, date
 from app import db, login
+from flask import url_for
 from flask_login import UserMixin
-from flask_table import Table, Col
+from flask_table import Table, Col, LinkCol
 
 ACCESS = {
     'guest' : 'guest',
@@ -59,6 +60,21 @@ class User(UserMixin, db.Model):
 
         return self.access >= access_level
 
+    @classmethod
+    def get_sorted_by(cls, sort, reverse=False):
+        """Creates sort url for table headers.
+        
+        Args:
+            cls: Corresponding class
+            sort: Column to be sorted
+            reverse: Current direction of data
+        """
+
+        return sorted( 
+            cls.query.all(), 
+            key=lambda x: getattr(x, sort), 
+            reverse=reverse)
+
 class UserTable(Table):
     """Creates framework for User table.
     
@@ -66,8 +82,29 @@ class UserTable(Table):
         Table: Baseclass from flask-table.
     """
 
-    username = Col('Username')
+    id = Col('Id', show=False)
+    username = Col('Username', column_html_attrs={'class': 'username'})
     email = Col('Email')
+    access = Col('Access Level')
+    deleteUser = LinkCol('Delete', 'deleteUser',\
+                 url_kwargs=dict(username='username'),\
+                 anchor_attrs={'class': 'myclass'},\
+                 allow_sort = False)
+    allow_sort = True
+
+    def sort_url(self, col_key, reverse=False):
+        """Creates sort url for table headers.
+        
+        Args:
+            col_key: Column to be sorted
+            reverse: Current direction of data
+        """
+
+        if reverse:
+            direction = 'desc'
+        else:
+            direction = 'asc'
+        return url_for('users', sort=col_key, direction=direction)
 
 class Measurements(db.Model):
     """Defines a "Measurements" table

@@ -13,8 +13,8 @@ import printlabel as pl
 import scale as s
 from decorator import requires_access_level
 from pprint import pprint
-
 import os 
+
 @app.route('/favicon.ico') 
 def favicon(): 
     return send_from_directory(os.path.join(app.root_path, 'static'),\
@@ -178,5 +178,22 @@ def weighItem():
 def users():
     """Creates admin user's panel."""
 
-    table = UserTable(User.query.all())
+    sort = request.args.get('sort', 'username')
+    reverse = (request.args.get('direction', 'asc') == 'desc')
+    table = UserTable(User.get_sorted_by(sort, reverse), 
+            sort_by=sort, 
+            sort_reverse=reverse)
+
+    # table = UserTable(User.query.all())
     return render_template('users.html', title='User\'s table', table=table)
+
+@app.route('/users/delete-<username>', methods=['GET', 'POST'])
+@login_required
+@requires_access_level(ACCESS['admin'])
+def deleteUser(username):
+    user = User.query.filter_by(username=username).first()
+    db.session.delete(user)
+    db.session.commit()
+
+    flash('User deleted!', 'success')
+    return redirect(url_for('users'))
