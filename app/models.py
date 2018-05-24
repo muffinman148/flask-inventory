@@ -7,7 +7,7 @@ from datetime import datetime, date
 from app import db, login
 from flask import url_for
 from flask_login import UserMixin
-from flask_table import Table, Col, LinkCol
+from flask_table import Table, Col, LinkCol, ButtonCol
 
 ACCESS = {
     'guest' : 'guest',
@@ -86,9 +86,18 @@ class UserTable(Table):
     username = Col('Username', column_html_attrs={'class': 'username'})
     email = Col('Email')
     access = Col('Access Level')
-    deleteUser = LinkCol('Delete', 'deleteUser',\
+    editUser = ButtonCol('Edit', 'editUser',\
                  url_kwargs=dict(username='username'),\
-                 anchor_attrs={'class': 'myclass'},\
+                 allow_sort = False)
+    deleteUser = ButtonCol('Delete', 'deleteUser',\
+                 url_kwargs=dict(username='username'),\
+                 button_attrs={
+                     'class': 'myclass', 
+                     'data-href': 'dataLink', 
+                     'data-toggle': 'modal', 
+                     'data-target': '#confirm-delete'},\
+                 form_attrs={
+                     'class': 'myform'},\
                  allow_sort = False)
     allow_sort = True
 
