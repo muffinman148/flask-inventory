@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+/* Keep Relevant Information */
+$(document).ready(function() {
+    $("div.alert button span").remove();
+});
+</script>
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+    #submit {
+        background-color: #337ab7;
+        border-color: #2e6da4;
+        color: white;
+    }
+    #submit:hover {
+        background-color: #286090;
+        border-color: #204d74;
+    }
+    #reset-password {
+        background-color: #d9534f; 
+        border: 1px solid #d43f3a;
+        color: white;
+    }
+    #reset-password:hover {
+        background-color: #c9302c;
+        border-color: #ac2925;
+    }
+</style>
+{% endblock %}
+
+{% block app_content %}
+    <h1>Edit Profile</h1>
+    <div class="row">
+        <div class="col-md-4">
+            {{ wtf.quick_form(form) }}
+            <hr>
+            <a href="edit-{{ form.username.data }}/reset-password" id="reset-password" class="btn btn-default">Reset Password</a>
+        </div>
+    </div>
+{% endblock %}

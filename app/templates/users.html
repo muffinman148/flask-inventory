@@ -40,15 +40,6 @@ $(document).ready(function() {
         $(this).removeClass('myclass'); 
         i++;
     });
-
-    /* Prevents User from deleting their own account */
-    var re = new RegExp('<User ([a-zA-z]+)>');
-    var userString = $('#my-data').attr("content");
-    var matches = re.exec(userString);
-    /* TODO Change this to "flash" error message */
-    $( "#deleteUser-" + matches[1] ).click(function( event ) {
-          event.preventDefault();
-    });
 });
 
 </script>
@@ -70,15 +61,15 @@ $(document).ready(function() {
     }
 
     form[action*="edit"] button {
-        background-color: #27739c; 
+        background-color: #337ab7; 
         color: white; 
-        border: 1px solid #27739c;
+        border: 1px solid #2e6da4;
         border-radius: 4px;
     }
     form[action*="edit"] button:hover {
-        background-color: #088fd8; 
+        background-color: #286090; 
         color: white; 
-        border: 1px solid #088fd8;
+        border: 1px solid #204d74;
     }
 
 </style>

@@ -6,9 +6,10 @@ from flask import render_template, flash, redirect, url_for, \
         request, jsonify, session, send_from_directory
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, PrintLabelForm, \
-    InventoryForm1, InventoryForm2
+    InventoryForm1, EditProfileForm, ResetPasswordForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import *
+from app.errors import *
 import printlabel as pl
 import scale as s
 from decorator import requires_access_level
@@ -59,11 +60,6 @@ def logout():
     """Logs user out. Redirects to login page."""
 
     logout_user()
-    return redirect(url_for('login'))
-
-@app.errorhandler(401)
-def page_not_found(e):
-    """Redirects users without proper access to login page."""
 
     return redirect(url_for('login'))
 
@@ -82,6 +78,7 @@ def register():
         db.session.commit()
         flash('User registered.', 'success')
         return redirect(url_for('users'))
+
     return render_template('register.html', title='Register', form=form)
 
 @app.route('/printLabel', methods=['GET', 'POST'])
@@ -170,6 +167,7 @@ def weighItem():
     # part = Measurements(partNumber=item.partNumber, pieceWeight=weight)
     # db.session.update().values(part)
     print( "The session weight is: " + str(session['weight']))
+
     return jsonify(weight=weight)
 
 @app.route('/users', methods=['GET', 'POST'])
@@ -183,8 +181,8 @@ def users():
     table = UserTable(User.get_sorted_by(sort, reverse), 
             sort_by=sort, 
             sort_reverse=reverse)
-
     # table = UserTable(User.query.all())
+    
     return render_template('users.html', title='User\'s table', table=table)
 
 @app.route('/users/delete-<username>', methods=['GET', 'POST'])
@@ -201,8 +199,43 @@ def deleteUser(username):
         flash('You cannot delete your own account!', 'warning')
         return redirect(url_for('users'))
     user = User.query.filter_by(username=username).first()
+    # TODO Add Logging: User Deletion
     db.session.delete(user)
     db.session.commit()
-
     flash('User deleted!', 'success')
+
     return redirect(url_for('users'))
+
+@app.route('/users/edit-<username>', methods=['GET', 'POST'])
+@login_required
+@requires_access_level(ACCESS['admin'])
+def editUser(username):
+    """Allows an admin user the ability to add other users the system."""
+
+    flash('Editing current user: ' + str(username), 'info')
+    user = User.query.filter_by(username=username).first()
+    form = EditProfileForm(obj=user)
+
+    # TODO Add validation for CHANGED fields only
+    if request.method == 'POST' and form.validate():
+        form.populate_obj(user)
+        db.session.commit()
+        flash('User changed.', 'success')
+        return redirect(url_for('users'))
+
+    return render_template('edit.html', title='Edit - <username>', form=form)
+
+@app.route('/users/edit-<username>/reset-password', methods=['GET', 'POST'])
+@login_required
+@requires_access_level(ACCESS['admin'])
+def resetPassword(username):
+    """Allows admin user to reset password of given user."""
+    
+    form = ResetPasswordForm()
+
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=username).first()
+        user.set_password(form.password.data)
+        db.session.commit()
+
+    return render_template('reset-password.html', title='Reset Password', form=form)
