@@ -108,7 +108,6 @@ def inventory():
 
     # TODO Fix form logic
     form = InventoryForm1()
-    # if form.validate_on_submit(): # Checks form submission syntax validity
     mode = ""
     if "submit" in request.form: # Checks form submission syntax validity
         item = Items.query.filter_by(ItemCode=form.itemCode.data).first()
@@ -117,19 +116,18 @@ def inventory():
         # Checks if part number field is correct
         if item is None: # No input for the field
             flash('Item not on file.', 'warning')
-            state = "noitem"
-            return redirect(url_for('inventory', state=state))
+            return redirect(url_for('inventory'))
+
         elif measurement is None: # No current measurements available
             flash('No previous measurements found for, ' + item.ItemCodeDesc + '.', 'warning')
             flash('Place empty container on scale.', 'info')
             mode = "tare"
-            return redirect(url_for('inventoryItem', item=form.itemCode.data, mode=mode))
+
         else: # Generate Item Report
-            # User clicks "Weigh Item"
             flash('Place bin to be counted.', 'info')
             mode = "count"
-            # weight = s.runScale("getWeight", 0)
-            return redirect(url_for('inventoryItem', item=form.itemCode.data, mode=mode))
+
+        return redirect(url_for('inventoryItem', item=form.itemCode.data, mode=mode))
             
     return render_template('inventory.html', title='Inventory', form=form)
 
@@ -146,17 +144,18 @@ def inventoryItem(item, mode):
     flash('Current mode is: ' + mode, 'info')
     # TODO Finish logic for tare and count methods
     if mode == "tare":
-        weight = session.get('weight', None)
-        if weight:
-            flash("We have the weight: " + str(weight) + ".", 'info')
+        # if weight:
+        #     flash("We have the weight: " + str(weight) + ".", 'info')
         table = MeasurementsTable(Measurements.query.filter_by(partNumber=item))
-        return render_template('item.html', title=item, item=item, mode=mode, table=table)
+
     elif mode == "count":
         table = MeasurementsTable(Measurements.query.filter_by(partNumber=item))
-        return render_template('item.html', title=item, item=item, mode=mode, table=table)
+
     else:
         flash('Illegal mode: "' + mode + '" Contact administrator.', 'danger')
         return redirect(url_for('inventory'))
+
+    return render_template('item.html', title=item, item=item, mode=mode, table=table)
 
 @app.route('/weighItem', methods=['GET', 'POST'])
 @login_required
