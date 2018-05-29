@@ -16,8 +16,6 @@ $ source venv/bin/activate
 
 Create ``password.py`` file for your ``config.py`` with your own database information.
 ```python
-import os
-
 # This file should never be on git.
 import os
 
