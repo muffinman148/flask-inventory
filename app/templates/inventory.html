@@ -1,6 +1,63 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
 
+{% block scripts %}
+{{ super() }}
+<script>
+
+{% if current_user.access == "admin" %}
+$(document).ready(function() {
+    if(document.referrer == document.location.href) {
+        var alertNoItem  = $(".alert:contains('Item:'):contains('not on file.')");
+        alertNoItem.append("\
+                <button data-dismiss='alert' id='item-to-add' type='button' \
+                class='btn btn-ok btn-warning'>Add Item</button>\
+                <button data-dismiss='alert' type='button' class='btn btn-default'>\
+                Cancel</button>\
+        ");
+    }
+
+    $("#item-to-add").click(function(){
+        $.ajax({
+            url: "/inventory/addItem", 
+            type: 'POST',
+            success: function(result){
+                console.log("Item: " + result.item + " has been added to main.");
+                $("div.container").eq(1).prepend(
+                        // The following syntax mess is due to my editor
+                        // poorly handling quotes, indentation, etc.
+                        "\
+                        <div class='alert alert-success alert-dismissible'\
+                        role='alert'><button type='button' class='close'\
+                        data-dismiss='alert' aria-label='Close'>\
+                        <span aria-hidden='true'>×</span> </button>\
+                        Item added: " 
+                        + result.item + 
+                        "</div>"
+                        );
+            },
+            error: function(result){
+                console.log("Error: Item not added.");
+                $("div.container").eq(1).prepend(
+                        // The following syntax mess is due to my editor
+                        // poorly handling quotes, indentation, etc.
+                        "\
+                        <div class='alert alert-warning alert-dismissible'\
+                        role='alert'><button type='button' class='close'\
+                        data-dismiss='alert' aria-label='Close'>\
+                        <span aria-hidden='true'>×</span> </button>\
+                        Error: Item not added</div>"
+                        );
+            }
+        });
+    });
+
+});
+
+{% endif %}
+</script>
+{% endblock %}
+
 {% block app_content %}
     <h1>Inventory</h1>
     <div class="row">

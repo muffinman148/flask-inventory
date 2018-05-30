@@ -61,16 +61,6 @@
 
 <script>
 
-function weighItem() {
-    $.post('/weighItem', {
-    }).done(function(response) {
-        $("#result").text(response.weight);
-        alert(response.weight);
-    }).fail(function() {
-        $.text("Error: Could not contact server.");
-    });
-}
-
 </script>
 {% endblock %}
 

@@ -108,14 +108,16 @@ def inventory():
 
     # TODO Fix form logic
     form = InventoryForm1()
-    mode = ""
+
     if "submit" in request.form: # Checks form submission syntax validity
         item = Items.query.filter_by(ItemCode=form.itemCode.data).first()
         measurement = Measurements.query.filter_by(partNumber=form.itemCode.data).first()
 
         # Checks if part number field is correct
         if item is None: # No input for the field
-            flash('Item not on file.', 'warning')
+            session['item'] = form.itemCode.data
+            print("Our current session item data is " + str(session['item']))
+            flash('Item: ' + str(form.itemCode.data) + ' not on file.', 'warning')
             return redirect(url_for('inventory'))
 
         elif measurement is None: # No current measurements available
@@ -123,13 +125,41 @@ def inventory():
             flash('Place empty container on scale.', 'info')
             mode = "tare"
 
+            # Create new Measurement for Item
+            newMeasurement = Measurements(partNumber=form.itemCode.data)
+            db.session.add(newMeasurement)
+            db.session.commit()
+
+        elif measurement and int(measurement.tareWeight) is 0 or None: # Measurement and previous tareWeight exists
+            flash('Place empty container on scale.', 'info')
+            mode = "tare"
+
         else: # Generate Item Report
             flash('Place bin to be counted.', 'info')
             mode = "count"
 
+        # Set session mode
+        session['mode'] = mode
+        session['item'] = item
+
         return redirect(url_for('inventoryItem', item=form.itemCode.data, mode=mode))
             
     return render_template('inventory.html', title='Inventory', form=form)
+
+@app.route('/inventory/addItem', methods=['POST'])
+@login_required
+def addItem():
+    """Returns json of newly added item."""
+
+    item = session.get('item', None)
+    if(item is not None):
+        newItem = Items(ItemCode=item)
+        db.session.add(newItem)
+        db.session.commit()
+    else:
+        return internal_error(item)
+
+    return jsonify(item=item) # TODO Pass confirmation instead?
 
 @app.route('/inventory/<mode>-<item>', methods=['GET', 'POST'])
 @login_required
