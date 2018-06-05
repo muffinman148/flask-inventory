@@ -18,6 +18,8 @@ import os
 
 @app.route('/favicon.ico') 
 def favicon(): 
+    """Returns favicon for all pages."""
+
     return send_from_directory(os.path.join(app.root_path, 'static'),\
             'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
@@ -58,6 +60,10 @@ def login():
 @app.route('/logout')
 def logout():
     """Logs user out. Redirects to login page."""
+
+    # Clears old session variables
+    session.pop('item', None)
+    session.pop('mode', None)
 
     logout_user()
 
@@ -236,7 +242,7 @@ def weighItem():
         flash('Illegal mode: "' + mode + '" Contact administrator.', 'danger')
         db.session.rollback()
 
-    return jsonify(weight=weight) # TODO Pass confirmation instead?
+    return jsonify(weight=weight)
 
 @app.route('/users', methods=['GET', 'POST'])
 @login_required

@@ -38,7 +38,20 @@
                     <li><a href="{{ url_for('login') }}">Login</a></li>
                     {% else %}
                     {% if current_user.is_admin() %}
-                    <li><a href="{{ url_for('users') }}">Manage</a></li>
+                    <!--<li><a href="{{ url_for('users') }}">Manage</a></li>-->
+
+                    <li class="dropdown">                    
+                        <a class="dropdown-toggle btn-default" data-toggle="dropdown" href="#">
+                        <span></span> Manage<strong class="caret"></strong>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url_for('users') }}">Users</a></li>
+                            <li><a href="#">Inventory</a></li>
+                            <li class="divider"></li>
+                            <li><a href='#'>Temp Link</a></li>
+                        </ul>
+                     </li>
+
                     {% endif %}
                     <li><a href="{{ url_for('inventory') }}">Inventory</a></li>
                     <li><a href="{{ url_for('printLabel') }}">Print label</a></li>
@@ -59,10 +72,24 @@
 {{ super() }}
 {# super() is needed to put scripts after Bootstrap jquery call #}
 <script>
+
 $(document).ready(function() {
     $(".alert-warning").delay(6000).fadeOut(750);
     $(".alert-info:contains('Current mode is')").delay(4000).fadeOut(750);
+
+    dropdownToggleFix();
+    $(window).resize(dropdownToggleFix);
 });
+
+// Fixes Dropdown Toggle
+function dropdownToggleFix() {
+    if ($('header').width() < 767 ) {
+        $('.dropdown').hover(function() { $('.dropdown-toggle', this).trigger('click'); });
+    } else if ($('header').width() > 767 ) {
+        $('.dropdown').click(function() { $('.dropdown-toggle', this).trigger('click'); });
+    }
+}
+
 </script>
 {% endblock %}
 
