@@ -5,14 +5,13 @@ This file handles the Views for the inventory system.
 from flask import render_template, flash, redirect, url_for, \
         request, jsonify, session, send_from_directory
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, PrintLabelForm, \
-    InventoryForm1, EditProfileForm, ResetPasswordForm
+from app.forms import PrintLabelForm, InventoryForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import *
 from app.errors import *
 import printlabel as pl
 import scale as s
-from decorator import requires_access_level
+from app.decorator import requires_access_level
 from pprint import pprint
 import os 
 
@@ -30,62 +29,6 @@ def index():
     """Returns the home page."""
 
     return render_template('index.html', title='Home Page')
-
-@app.route('/login', methods=['GET','POST'])
-def login():
-    """Returns the login page. This page authenticates users."""
-
-    if current_user.is_authenticated: # Redirects logged in users
-        return redirect(url_for('index'))
-    form = LoginForm()
-    if form.validate_on_submit(): # Checks form submission syntax validity
-        user = User.query.filter_by(username=form.username.data).first()
-
-        # Checks if username field is empty or password is correct
-        if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password.')
-            return redirect(url_for('login'))
-
-        # User logged in successfully
-        login_user(user, remember=form.remember_me.data)
-
-        # Logs User into original inputted URL
-        next_page = request.args.get('next')
-        if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index')
-        return redirect(next_page)
-
-    return render_template('login.html', title='Sign In', form=form)
-
-@app.route('/logout')
-def logout():
-    """Logs user out. Redirects to login page."""
-
-    # Clears old session variables
-    session.pop('item', None)
-    session.pop('mode', None)
-
-    logout_user()
-
-    return redirect(url_for('login'))
-
-@app.route('/register', methods=['GET', 'POST'])
-@login_required
-@requires_access_level(ACCESS['admin'])
-def register():
-    """Allows an admin user the ability to add other users the system."""
-
-    form = RegistrationForm()
-    if form.validate_on_submit():
-        user = User(username=form.username.data, email=form.email.data, \
-                access=form.access.data)
-        user.set_password(form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash('User registered.', 'success')
-        return redirect(url_for('users'))
-
-    return render_template('register.html', title='Register', form=form)
 
 @app.route('/printLabel', methods=['GET', 'POST'])
 @login_required
@@ -113,7 +56,7 @@ def inventory():
     """Inventory form to check if item is on file. """
 
     # TODO Fix form logic
-    form = InventoryForm1()
+    form = InventoryForm()
     
     # Clear Old Inventory Session
     # session.pop('mode', None)
@@ -243,73 +186,3 @@ def weighItem():
         db.session.rollback()
 
     return jsonify(weight=weight)
-
-@app.route('/users', methods=['GET', 'POST'])
-@login_required
-@requires_access_level(ACCESS['admin'])
-def users():
-    """Creates admin user's panel."""
-
-    sort = request.args.get('sort', 'username')
-    reverse = (request.args.get('direction', 'asc') == 'desc')
-    table = UserTable(User.get_sorted_by(sort, reverse), 
-            sort_by=sort, 
-            sort_reverse=reverse)
-    # table = UserTable(User.query.all())
-    
-    return render_template('users.html', title='User\'s table', table=table)
-
-@app.route('/users/delete-<username>', methods=['GET', 'POST'])
-@login_required
-@requires_access_level(ACCESS['admin'])
-def deleteUser(username):
-    """Deletes user if not current user
-    
-    Args:
-        username (obj): Username object to delete
-    """
-
-    if str(username) in str(current_user):
-        flash('You cannot delete your own account!', 'warning')
-        return redirect(url_for('users'))
-    user = User.query.filter_by(username=username).first()
-    # TODO Add Logging: User Deletion
-    db.session.delete(user)
-    db.session.commit()
-    flash('User deleted!', 'success')
-
-    return redirect(url_for('users'))
-
-@app.route('/users/edit-<username>', methods=['GET', 'POST'])
-@login_required
-@requires_access_level(ACCESS['admin'])
-def editUser(username):
-    """Allows an admin user the ability to add other users the system."""
-
-    flash('Editing current user: ' + str(username), 'info')
-    user = User.query.filter_by(username=username).first()
-    form = EditProfileForm(obj=user)
-
-    # TODO Add validation for CHANGED fields only
-    if request.method == 'POST' and form.validate():
-        form.populate_obj(user)
-        db.session.commit()
-        flash('User changed.', 'success')
-        return redirect(url_for('users'))
-
-    return render_template('edit.html', title='Edit - <username>', form=form)
-
-@app.route('/users/edit-<username>/reset-password', methods=['GET', 'POST'])
-@login_required
-@requires_access_level(ACCESS['admin'])
-def resetPassword(username):
-    """Allows admin user to reset password of given user."""
-    
-    form = ResetPasswordForm()
-
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=username).first()
-        user.set_password(form.password.data)
-        db.session.commit()
-
-    return render_template('reset-password.html', title='Reset Password', form=form)

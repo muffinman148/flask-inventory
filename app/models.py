@@ -86,10 +86,10 @@ class UserTable(Table):
     username = Col('Username', column_html_attrs={'class': 'username'})
     email = Col('Email')
     access = Col('Access Level')
-    editUser = ButtonCol('Edit', 'editUser',\
+    editUser = ButtonCol('Edit', 'manage.editUser',\
                  url_kwargs=dict(username='username'),\
                  allow_sort = False)
-    deleteUser = ButtonCol('Delete', 'deleteUser',\
+    deleteUser = ButtonCol('Delete', 'manage.deleteUser',\
                  url_kwargs=dict(username='username'),\
                  button_attrs={
                      'class': 'myclass', 
@@ -113,7 +113,7 @@ class UserTable(Table):
             direction = 'desc'
         else:
             direction = 'asc'
-        return url_for('users', sort=col_key, direction=direction)
+        return url_for('manage.users', sort=col_key, direction=direction)
 
 class Measurements(db.Model):
     """Defines a "Measurements" table

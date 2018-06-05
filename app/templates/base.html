@@ -35,17 +35,17 @@
 
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_anonymous %}
-                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
                     {% else %}
                     {% if current_user.is_admin() %}
-                    <!--<li><a href="{{ url_for('users') }}">Manage</a></li>-->
+                    <!--<li><a href="{{ url_for('manage.users') }}">Manage</a></li>-->
 
                     <li class="dropdown">                    
-                        <a class="dropdown-toggle btn-default" data-toggle="dropdown" href="#">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <span></span> Manage<strong class="caret"></strong>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="{{ url_for('users') }}">Users</a></li>
+                            <li><a href="{{ url_for('manage.users') }}">Users</a></li>
                             <li><a href="#">Inventory</a></li>
                             <li class="divider"></li>
                             <li><a href='#'>Temp Link</a></li>
@@ -55,7 +55,7 @@
                     {% endif %}
                     <li><a href="{{ url_for('inventory') }}">Inventory</a></li>
                     <li><a href="{{ url_for('printLabel') }}">Print label</a></li>
-                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                     {% endif %}
                 </ul>
             </div> <!-- End navbar-default -->
@@ -65,7 +65,7 @@
 
 {% block styles %}
 {{super()}}
-<link rel="stylesheet" href="{{url_for('.static', filename='style.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
 {% endblock %}
 
 {% block scripts %}

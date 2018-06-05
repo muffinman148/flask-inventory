@@ -24,7 +24,7 @@ $('#confirm-delete').on('show.bs.modal', function(e) {
     $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
     
     $('.user-to-delete').html('Delete User: <strong>' +
-            $(this).find('.btn-ok').attr('href').replace('/users/delete-','') + 
+            $(this).find('.btn-ok').attr('href').replace('users/delete-','') + 
             '</strong>');
 });
 
@@ -34,7 +34,7 @@ $(document).ready(function() {
     var i = 0;
     $('.myclass').each(function () {
         userVar = "deleteUser-" + $('.username').eq(i+1).text();
-        linkVar = "/users/delete-" + $('.username').eq(i+1).text();
+        linkVar = "users/delete-" + $('.username').eq(i+1).text();
         $(this).attr('id', userVar); 
         $(this).attr('data-href', linkVar); 
         $(this).removeClass('myclass'); 
@@ -78,10 +78,10 @@ $(document).ready(function() {
 {% block app_content %}
 
 <h1>Users</h1>
-<p><a href="{{ url_for('register') }}">Create new user</a></p>
+<p><a href="{{ url_for('manage.register') }}">Create new user</a></p>
 <p><a style="color: red;" href="javascript:toggleDelete()">Delete user</a></p>
 {{ table }}
-<p><a href="{{ url_for('register') }}">Create new user</a></p>
+<p><a href="{{ url_for('manage.register') }}">Create new user</a></p>
 
 <!-- Modal -->
 <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

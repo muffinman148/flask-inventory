@@ -9,6 +9,7 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from flask_mail import Mail
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
@@ -18,8 +19,18 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+mail = Mail()
 login = LoginManager(app)
 bootstrap = Bootstrap(app)
+
+from app.errors import bp as errors_bp
+app.register_blueprint(errors_bp)
+
+from app.auth import bp as auth_bp
+app.register_blueprint(auth_bp, url_prefix='/auth')
+
+from app.manage import bp as manage_bp
+app.register_blueprint(manage_bp, url_prefix='/manage')
 
 if not app.debug:
     # Send errors to email
