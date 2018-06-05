@@ -146,7 +146,12 @@ class MeasurementsTable(Table):
     """
 
     partNumber = Col('Part Number')
-    partCount = Col('Part Count')
+    tareWeight = Col('Tare Weight',
+                td_html_attrs={'class': 'oldTareWeight'},\
+                )
+    partCount = Col('Part Count',\
+                td_html_attrs={'class': 'oldPartCount'},\
+                )
 
 class Items(db.Model): # rpi_inv_ci_item
     """Defines an "Items" table.

@@ -58,9 +58,11 @@
 {% block scripts %}
 {{ super() }}
 {# super() is needed to put scripts after Bootstrap jquery call #}
-
 <script>
-
+$(document).ready(function() {
+    $(".alert-warning").delay(6000).fadeOut(750);
+    $(".alert-info:contains('Current mode is')").delay(4000).fadeOut(750);
+});
 </script>
 {% endblock %}
 
@@ -85,4 +87,5 @@
         {% block app_content %}{% endblock %}
     </div>
 
+    {% include 'footer.html' %}
 {% endblock %}

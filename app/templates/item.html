@@ -1,42 +1,154 @@
 {% extends "base.html" %}
 {% import 'bootstrap/wtf.html' as wtf %}
 
+{% block head %}
+{{ super() }}
+<meta id="current_mode" content="{{mode}}">
+{% endblock %}
+
 {% block scripts %}
 {{ super() }}
 <script>
 
-// TODO Fix this function to replace "base.html" script
+function redirectToCount(mode, match) {
+    var URL = "count-" + match[2];
+    const clickPromise = new Promise((resolve, reject) => {
+        // Rejection occurs on "Cancel"
+        $("#stop").on('click', reject);
+    });
+    const timerPromise = new Promise((resolve, reject) => {
+        // Resolution occurs on "Continue"
+        $("#continue").on('click', resolve);
+
+        // Resolution occurs after 5 seconds
+        var t = 6;
+        (function countDown() {
+            if (t--) {
+                $('#intervalCount').text("Redirecting in " + t + ' s');
+                setTimeout(countDown, 1000);
+            }
+        })();
+        setTimeout(resolve, 5000); // 5 seconds
+    });
+    Promise.race([clickPromise, timerPromise])
+        .then(res => window.location = URL)
+        .catch(rej => $('#confirm-redirect').modal('hide'));
+}
+
 $(document).ready(function(){
-    $("button").click(function(){
+    var mode = $("meta[id=current_mode]").attr("content");
+    
+    var re = new RegExp('(tare|count)-(.+)$');
+    var match = re.exec(window.location.pathname);
+
+    if(mode == "tare") { // Highlights table value to change
+        $(".oldTareWeight").addClass("toChange");
+    } else if(mode == "count") {
+        $(".oldPartCount").addClass("toChange");
+    }
+
+    $("#weighItem").click(function() {
         $.ajax({
             url: "/weighItem", 
             type: 'POST',
-            success: function(result){
-                if (mode == "tare") {
-                    $("#result").text(result.weight);
+            success: function(result) { // Client Side Update
+                // console.log("Mode is " + mode);
+                if(mode == "tare") {
+                    $(".oldTareWeight").text(result.weight);
+                    $(".oldTareWeight").addClass("newTareWeight").removeClass("toChange").removeClass("oldTareWeight");
+                    // console.log("Weigh item running. Tare Result: " + result.weight);
+                    $("div.alert").remove();
+
                 } else if (mode == "count") {
-                    $("#result").text(result.weight);
+                    $(".oldPartCount").text(result.weight);
+                    $(".oldPartCount").addClass("newPartCount").removeClass("toChange").removeClass("oldPartCount");
+                    // console.log("Weigh item running. Count Result: " + result.weight);
+
                 }
             },
             error: function(result){
-                console.log("This did not parse correctly: " + result);
+                // console.log("This did not parse correctly: " + result);
+                $("div.container").eq(1).prepend(
+                        // The following syntax mess is due to my editor
+                        // poorly handling quotes, indentation, etc.
+                        "\
+                        <div class='alert alert-danger alert-dismissible'\
+                        role='alert'><button type='button' class='close'\
+                        data-dismiss='alert' aria-label='Close'>\
+                        <span aria-hidden='true'>×</span> </button>\
+                        Error: Item could not be counted.</div>"
+                );
             }
         });
     });
+    
+    // Occurs after weight retrieved and posted
+    $(document).ajaxComplete(function() {
+        if(mode == "tare") {
+            $("#confirm-redirect").modal("show");
+            redirectToCount(mode, match);
+        }
+    });
 });
+
 
 </script>
 {% endblock %}
 
+{% block styles %}
+{{ super() }}
+<style>
+.toChange {
+    color: #31708f;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+.newPartCount, .newTareWeight {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+</style>
+{% endblock %}
+
 {% block app_content %}
+
 <h1>Item: {{ item }}</h1>
-    {% if mode == "tare" %}
-    <p>Place EMPTY container on scale</p>
-    <a href="javascript:weighItem()" id="weighItem" class="btn btn-default">Tare</a>
-    {% elif mode == "count" %}
-    <p>Place container on scale for COUNTING</p>
-    <a href="javascript:weighItem()" id="weighItem"class="btn btn-default">Count</a>
-    {% endif %}
-    <p id="result"> </p>
-    {{ table }}
+{% if mode == "tare" %}
+<p>Place EMPTY container on scale</p>
+<button id="weighItem" class="btn btn-default" 
+   data-target="#confirm-redirect">Tare</button>
+{% elif mode == "count" %}
+<p>Place container on scale for COUNTING</p>
+<button id="weighItem"class="btn btn-default">Count</button>
+{% endif %}
+<p id="result"> </p>
+{{ table }}
+
+<!-- Modal -->
+<div class="modal fade" id="confirm-redirect" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Confirm Redirect</h4>
+            </div>
+        
+            <div class="modal-body">
+                <p>Redirecting to Count Mode</p>
+                <p>Do you want to stop this procedure?</p>
+                <p id="intervalCount"></p>
+            </div>
+            
+            <div class="modal-footer">
+                <button id="stop" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <button id="continue" type="button" class="btn btn-primary" data-dismiss="modal">Continue</button>
+                <!--<a class="btn btn-default btn-ok"href="">Continue</a>-->
+            </div>
+
+        </div> <!-- End modal-content -->
+    </div> <!-- End modal-dialog -->
+</div> <!-- End modal -->
+
 {% endblock %}

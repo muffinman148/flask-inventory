@@ -108,6 +108,9 @@ def inventory():
 
     # TODO Fix form logic
     form = InventoryForm1()
+    
+    # Clear Old Inventory Session
+    # session.pop('mode', None)
 
     if "submit" in request.form: # Checks form submission syntax validity
         item = Items.query.filter_by(ItemCode=form.itemCode.data).first()
@@ -116,12 +119,12 @@ def inventory():
         # Checks if part number field is correct
         if item is None: # No input for the field
             session['item'] = form.itemCode.data
-            print("Our current session item data is " + str(session['item']))
             flash('Item: ' + str(form.itemCode.data) + ' not on file.', 'warning')
             return redirect(url_for('inventory'))
 
         elif measurement is None: # No current measurements available
-            flash('No previous measurements found for, ' + item.ItemCodeDesc + '.', 'warning')
+            session.pop('item', None)
+            flash('No previous measurements found for, ' + form.itemCode.data + '.', 'warning')
             flash('Place empty container on scale.', 'info')
             mode = "tare"
 
@@ -130,7 +133,7 @@ def inventory():
             db.session.add(newMeasurement)
             db.session.commit()
 
-        elif measurement and int(measurement.tareWeight) is 0 or None: # Measurement and previous tareWeight exists
+        elif measurement.tareWeight == 0 or measurement.tareWeight is None: # Measurement and previous tareWeight exists
             flash('Place empty container on scale.', 'info')
             mode = "tare"
 
@@ -140,7 +143,7 @@ def inventory():
 
         # Set session mode
         session['mode'] = mode
-        session['item'] = item
+        session['item'] = form.itemCode.data
 
         return redirect(url_for('inventoryItem', item=form.itemCode.data, mode=mode))
             
@@ -148,6 +151,7 @@ def inventory():
 
 @app.route('/inventory/addItem', methods=['POST'])
 @login_required
+@requires_access_level(ACCESS['admin'])
 def addItem():
     """Returns json of newly added item."""
 
@@ -172,16 +176,9 @@ def inventoryItem(item, mode):
     """
 
     flash('Current mode is: ' + mode, 'info')
-    # TODO Finish logic for tare and count methods
-    if mode == "tare":
-        # if weight:
-        #     flash("We have the weight: " + str(weight) + ".", 'info')
+    if mode == "tare" or "count": # User is weighing container
         table = MeasurementsTable(Measurements.query.filter_by(partNumber=item))
-
-    elif mode == "count":
-        table = MeasurementsTable(Measurements.query.filter_by(partNumber=item))
-
-    else:
+    else: # Illegal mode passed
         flash('Illegal mode: "' + mode + '" Contact administrator.', 'danger')
         return redirect(url_for('inventory'))
 
@@ -192,12 +189,54 @@ def inventoryItem(item, mode):
 def weighItem():
     """Returns json of weight of an item."""
 
+    # Initializes Session Variables
+    mode = session.get('mode', None)
+    item = session.get('item', None)
+    
+    # Retrieves Scale Data
     weight = s.runScale("getWeight", 0)
-    # part = Measurements(partNumber=item.partNumber, pieceWeight=weight)
-    # db.session.update().values(part)
-    print( "The session weight is: " + str(session['weight']))
 
-    return jsonify(weight=weight)
+    # This is for TESTING
+    print("Scale weight is: " + str(weight))
+    weight = 0.0
+    # End TESTING
+
+    measurementObject = Measurements.query.filter_by(partNumber=item).first()
+
+    # Tare Conditions 
+    # ---------------
+    # User has submitted an item value that does not have a tare weight
+    if mode == 'tare':
+        # tareWeight=weight
+        measurementObject.tareWeight = weight
+        db.session.commit()
+        session['mode'] = 'count'
+        # Return JSON data to client; Redirect to Count mode
+        return jsonify(weight=weight) ## and redirect(url_for('inventoryItem',\
+            ## item=session['item'], mode=session['mode']))
+
+    # Count Conditions 
+    # ----------------
+    # User has submitted an item value that contains tare weight. Count should
+    # be accessible regardless if count data already exists in the event of a
+    # need for resubmission of data.
+    elif mode == 'count':
+        # totalWeight=weight
+        measurementObject.totalWeight = weight
+        # totalWeight=-tareWeight
+        measurementObject.totalWeight -= float(measurementObject.tareWeight)
+        db.session.commit()
+
+    elif mode is None:
+        flash('Session mode is not passed. Session is corrupt or navigated to\
+                prematurely.', 'danger')
+        return redirect(url_for('inventory'))
+
+    else:
+        flash('Illegal mode: "' + mode + '" Contact administrator.', 'danger')
+        db.session.rollback()
+
+    return jsonify(weight=weight) # TODO Pass confirmation instead?
 
 @app.route('/users', methods=['GET', 'POST'])
 @login_required
