@@ -42,6 +42,15 @@ $(document).ready(function() {
     });
 });
 
+
+$(document).ready(function(){
+    $("#myInput").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("tbody tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+});
 </script>
 {% endblock %}
 
@@ -72,6 +81,10 @@ $(document).ready(function() {
         border: 1px solid #204d74;
     }
 
+    .table-container {
+        display: inline-block;
+    }
+
 </style>
 {% endblock %}
 
@@ -80,7 +93,11 @@ $(document).ready(function() {
 <h1>Users</h1>
 <p><a href="{{ url_for('manage.register') }}">Create new user</a></p>
 <p><a style="color: red;" href="javascript:toggleDelete()">Delete user</a></p>
-{{ table }}
+<div class="table-container">
+    <input class="form-control" id="myInput" type="text" placeholder="Search">
+    <hr>
+    {{ table }}
+</div>
 <p><a href="{{ url_for('manage.register') }}">Create new user</a></p>
 
 <!-- Modal -->
