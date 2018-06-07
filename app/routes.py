@@ -6,14 +6,15 @@ from flask import render_template, flash, redirect, url_for, \
         request, jsonify, session, send_from_directory
 from app import app, db
 from app.forms import PrintLabelForm, InventoryForm
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import current_user,  login_required
 from app.models import *
 from app.errors import *
 import printlabel as pl
 import scale as s
 from app.decorator import requires_access_level
-from pprint import pprint
 import os 
+import logging
+from logging.handlers import RotatingFileHandler
 
 @app.route('/favicon.ico') 
 def favicon(): 
@@ -28,7 +29,10 @@ def favicon():
 def index():
     """Returns the home page."""
 
-    return render_template('index.html', title='Home Page')
+    with open("logs/inventory.log", "r") as f:
+        logs = f.read()
+
+    return render_template('index.html', title='Home Page', logs=logs)
 
 @app.route('/printLabel', methods=['GET', 'POST'])
 @login_required
@@ -46,7 +50,10 @@ def printLabel():
             return redirect(url_for('printLabel'))
         else:
             flash('Printing Label ' + form.itemCode.data + '.' + item.ItemCodeDesc, 'success')
-            pl.sendPrintData(item)
+            if os.environ['FLASK_ENV'] != 'development':
+                pl.sendPrintData(item)
+            app.logger.info('"' + str(current_user.username) + '"' + ' has printed a label for item ' + 
+                    form.itemCode.data + ' has been printed.')
 
     return render_template('printLabel.html', title='Print Labels', form=form)
 
@@ -64,6 +71,8 @@ def inventory():
     if "submit" in request.form: # Checks form submission syntax validity
         item = Items.query.filter_by(ItemCode=form.itemCode.data).first()
         measurement = Measurements.query.filter_by(partNumber=form.itemCode.data).first()
+        app.logger.info('"' + str(current_user.username) + '"' + " prepping weighing of item " + 
+                form.itemCode.data)
 
         # Checks if part number field is correct
         if item is None: # No input for the field
@@ -81,6 +90,8 @@ def inventory():
             newMeasurement = Measurements(partNumber=form.itemCode.data)
             db.session.add(newMeasurement)
             db.session.commit()
+            app.logger.info('"' + str(current_user.username) + '"' + " created new measurement for item: " + 
+                    form.itemCode.data)
 
         elif measurement.tareWeight == 0 or measurement.tareWeight is None: # Measurement and previous tareWeight exists
             flash('Place empty container on scale.', 'info')
@@ -109,7 +120,11 @@ def addItem():
         newItem = Items(ItemCode=item)
         db.session.add(newItem)
         db.session.commit()
+        app.logger.info('"' + str(current_user.username) + '"' + ' has add item ' + 
+                form.itemCode.data + ' to the Items table.')
     else:
+        app.logger.info('"' + str(current_user.username) + '"' + ' was not able add item ' + 
+                form.itemCode.data + ' to the Items table.')
         return internal_error(item)
 
     return jsonify(item=item) # TODO Pass confirmation instead?
@@ -129,6 +144,8 @@ def inventoryItem(item, mode):
         table = MeasurementsTable(Measurements.query.filter_by(partNumber=item))
     else: # Illegal mode passed
         flash('Illegal mode: "' + mode + '" Contact administrator.', 'danger')
+        app.logger.error('Illegal mode: "' + mode + '" Contact administrator.')
+
         return redirect(url_for('inventory'))
 
     return render_template('item.html', title=item, item=item, mode=mode, table=table)
@@ -160,9 +177,8 @@ def weighItem():
         measurementObject.tareWeight = weight
         db.session.commit()
         session['mode'] = 'count'
-        # Return JSON data to client; Redirect to Count mode
-        return jsonify(weight=weight) ## and redirect(url_for('inventoryItem',\
-            ## item=session['item'], mode=session['mode']))
+        app.logger.info('"' + str(current_user.username) + '"' + ' is taring ' + 
+                str(item) + ' with container weight of: ' + str(weight))
 
     # Count Conditions 
     # ----------------
@@ -175,14 +191,19 @@ def weighItem():
         # totalWeight=-tareWeight
         measurementObject.totalWeight -= float(measurementObject.tareWeight)
         db.session.commit()
+        app.logger.info('"' + str(current_user.username) + '"' + ' has counted ' + 
+                str(item) + ' with a count of ' + str(weight))
 
     elif mode is None:
         flash('Session mode is not passed. Session is corrupt or navigated to\
                 prematurely.', 'danger')
+        app.logger.error('Session mode is not passed. Session is corrupt or navigated to prematurely.')
+
         return redirect(url_for('inventory'))
 
     else:
         flash('Illegal mode: "' + mode + '" Contact administrator.', 'danger')
         db.session.rollback()
+        app.logger.error('Illegal mode: "' + mode + '" Contact administrator.')
 
     return jsonify(weight=weight)
