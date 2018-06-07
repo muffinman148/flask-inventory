@@ -1,5 +1,58 @@
 {% extends "base.html" %}
 
+{% block scripts %}
+{{ super() }}
+<script>
+$(document).ready(function() {
+    // Separates Log file lines 
+    lines = $("pre").html().split("\n");
+    $("pre").html('<p>' + lines.join("</p><p>") + '</p>');
+
+    // Colorization of Log
+    $("p").html(function(_, html) {
+           return html.replace(/^(\d{4}-\d{2}-\d{2})/, '<span class="date">$1</span> ')
+                      .replace(/ (\d{2}:\d{2}:\d{2},\d{3})/, ' <span class="time">$1</span>')
+                      .replace(/\: (.*) \[/, ': <span class="message">$1</span> [')
+                      .replace(/\[in (.*)\]/, '[in <span class="path">$1</span>]')
+                      // Levels DEBUG, INFO, WARNING, ERROR and CRITICAL
+                      .replace(/(INFO)/, '<span class="info">$1</span>')
+                      .replace(/(WARNING)/, '<span class="warning">$1</span>')
+                      .replace(/(ERROR)/, '<span class="error">$1</span>')
+                      .replace(/(CRITICAL)/, '<span class="critical">$1</span>')
+                      ;
+    });
+});
+</script>
+{% endblock %}
+
+{% block styles %}
+{{ super() }}
+<style>
+
+/* Log line Message Stylization */
+.date { color: #563d7c; }
+.time { color: #ff017e; }
+.message { color: #ff6501; }
+.path { color: #286090; }
+
+/* Log line Level Stylization */
+.info { color: #31b0d5; }
+.warning { color: #ec971f; }
+.error { color: #c9302c; }
+.critical { color: #ac2925; }
+
+/* Hanging indent */
+p {
+    text-indent: -2em;
+    padding-left: 2em;
+    white-space: pre-line;
+}
+</style>
+{% endblock %}
+
 {% block app_content %}
     <h1>Hello, {{ current_user.username }}!</h1>
+    {% if current_user.is_admin() %}
+        <pre>{{ logs }}</pre>
+    {% endif %}
 {% endblock %}
