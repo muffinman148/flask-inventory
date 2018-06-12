@@ -9,8 +9,8 @@ from app.forms import PrintLabelForm, InventoryForm
 from flask_login import current_user,  login_required
 from app.models import *
 from app.errors import *
-import printlabel as pl
-import scale as s
+import app.printlabel as pl
+# import app.scale as s python 2.7 scale implementation
 from app.decorator import requires_access_level
 import os 
 import logging
@@ -159,8 +159,9 @@ def weighItem():
     mode = session.get('mode', None)
     item = session.get('item', None)
     
+    # TODO Add new implementation for Fairbanks scale
     # Retrieves Scale Data
-    weight = s.runScale("getWeight", 0)
+    # weight = s.runScale("getWeight", 0)
 
     # This is for TESTING
     print("Scale weight is: " + str(weight))

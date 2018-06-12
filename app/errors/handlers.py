@@ -2,7 +2,7 @@
 This file handles HTTP standard response codes.
 """
 
-from flask import render_template
+from flask import render_template, flash, redirect, url_for
 from app import app, db
 from app.errors import bp
 
@@ -12,7 +12,7 @@ def page_not_found(e):
 
     flash('Page not found.', 'warning')
 
-    return redirect(url_for('login'))
+    return redirect(url_for('auth.login'))
 
 @bp.app_errorhandler(404)
 def not_found_error(error):

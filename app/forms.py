@@ -41,9 +41,3 @@ class InventoryForm(FlaskForm):
         measurement = Measurements.query.filter_by(partNumber=itemCode.data).first()
         if measurement is None:
             raise ValidationError('No measurements on record.')
-
-class InventoryForm2(FlaskForm):
-    # TODO Remove table 
-    itemCode = StringField('Part Number', validators=[DataRequired()],
-            render_kw={'autofocus': True})
-    weighItem = SubmitField('Weigh Item')

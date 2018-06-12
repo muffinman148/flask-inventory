@@ -3,3 +3,6 @@ venv/
 logs/
 migrations/
 password.py
+.python-version
+venv3/
+testMail.py
