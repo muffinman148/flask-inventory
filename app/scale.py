@@ -12,9 +12,10 @@ from hx711py.hx711 import HX711
 
 def cleanAndExit():
     """Legacy function used for safely quiting scale read process."""
-    print "Cleaning..."
+
+    print("Cleaning...")
     GPIO.cleanup()
-    print "Bye!"
+    print("Bye!")
     sys.exit()
 
 def requestScaleData(weight_list):
