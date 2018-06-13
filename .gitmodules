@@ -1,0 +1,3 @@
+[submodule "app/hx711py"]
+    path = app/hx711py
+    url = git://github.com/tatobari/hx711py.git app/hx711py
