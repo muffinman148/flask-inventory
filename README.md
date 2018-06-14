@@ -17,9 +17,9 @@ $ pyenv install 3.6.5
 
 If you are having build issues check [here](https://github.com/pyenv/pyenv/wiki/common-build-problems) for fixes. Here is the fix for Ubuntu/Debian
 ```sh
-sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
-libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
-xz-utils tk-dev
+$ sudo apt-get install -y make build-essential libssl-dev zlib1g-dev libbz2-dev \
+  libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
+  xz-utils tk-dev
 ```
 
 ### Inventory System
@@ -35,6 +35,7 @@ If you have pyenv installed:
 $ pyenv local 3.6.5
 ```
 
+Initialize virtualenv
 ```sh
 $ python3 -m venv venv3
 $ source venv3/bin/activate 
@@ -43,7 +44,7 @@ $ pip install -r requirements.txt
 
 Run the ``startup.py`` to input information relating to:
 * FLASK_APP (Flask App environment variable)
-* FLASK_ENV (Flask proudction or development mode variable)
+* FLASK_ENV (Flask production or development mode variable)
 * SECRET_KEY (Secret key assigned to all sessions)
 * SQLALCHEMY_DATABASE_URI (Database engine connection composed of 'sql-variant://username:password@hostname/database')
 * ADMINS (Admin email)
