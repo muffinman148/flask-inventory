@@ -19,7 +19,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{ url_for('index') }}">AMMK Inventory System</a>
+                <a class="navbar-brand" href="{{ url_for('main.index') }}">AMMK Inventory System</a>
             </div>
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
@@ -53,8 +53,8 @@
                      </li>
 
                     {% endif %}
-                    <li><a href="{{ url_for('inventory') }}">Inventory</a></li>
-                    <li><a href="{{ url_for('printLabel') }}">Print label</a></li>
+                    <li><a href="{{ url_for('main.inventory') }}">Inventory</a></li>
+                    <li><a href="{{ url_for('main.printLabel') }}">Print label</a></li>
                     <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                     {% endif %}
                 </ul>

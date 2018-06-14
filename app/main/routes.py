@@ -3,9 +3,9 @@ This file handles the Views for the inventory system.
 """
 
 from flask import render_template, flash, redirect, url_for, \
-        request, jsonify, session, send_from_directory
-from app import app, db
-from app.forms import PrintLabelForm, InventoryForm
+        request, jsonify, session, send_from_directory, current_app
+from app import db
+from app.main.forms import PrintLabelForm, InventoryForm
 from flask_login import current_user,  login_required
 from app.models import *
 from app.errors import *
@@ -15,16 +15,17 @@ from app.decorator import requires_access_level
 import os 
 import logging
 from logging.handlers import RotatingFileHandler
+from app.main import bp
 
-@app.route('/favicon.ico') 
+@bp.route('/favicon.ico') 
 def favicon(): 
     """Returns favicon for all pages."""
 
-    return send_from_directory(os.path.join(app.root_path, 'static'),\
+    return send_from_directory(os.path.join(current_app.root_path, 'static'),\
             'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
-@app.route('/')
-@app.route('/index')
+@bp.route('/')
+@bp.route('/index')
 @login_required
 def index():
     """Returns the home page."""
@@ -34,7 +35,7 @@ def index():
 
     return render_template('index.html', title='Home Page', logs=logs)
 
-@app.route('/printLabel', methods=['GET', 'POST'])
+@bp.route('/printLabel', methods=['GET', 'POST'])
 @login_required
 def printLabel():
     """Print label form that allows user to print to Brother QL-720NW
@@ -47,7 +48,7 @@ def printLabel():
         # Checks if part number field is correct
         if item is None:
             flash('No input. Please input a part number.', 'warning')
-            return redirect(url_for('printLabel'))
+            return redirect(url_for('main.printLabel'))
         else:
             flash('Printing Label ' + form.itemCode.data + '.' + item.ItemCodeDesc, 'success')
             if os.environ['FLASK_ENV'] != 'development':
@@ -57,7 +58,7 @@ def printLabel():
 
     return render_template('printLabel.html', title='Print Labels', form=form)
 
-@app.route('/inventory', methods=['GET', 'POST'])
+@bp.route('/inventory', methods=['GET', 'POST'])
 @login_required
 def inventory():
     """Inventory form to check if item is on file. """
@@ -78,7 +79,7 @@ def inventory():
         if item is None: # No input for the field
             session['item'] = form.itemCode.data
             flash('Item: ' + str(form.itemCode.data) + ' not on file.', 'warning')
-            return redirect(url_for('inventory'))
+            return redirect(url_for('main.inventory'))
 
         elif measurement is None: # No current measurements available
             session.pop('item', None)
@@ -105,11 +106,11 @@ def inventory():
         session['mode'] = mode
         session['item'] = form.itemCode.data
 
-        return redirect(url_for('inventoryItem', item=form.itemCode.data, mode=mode))
+        return redirect(url_for('main.inventoryItem', item=form.itemCode.data, mode=mode))
             
     return render_template('inventory.html', title='Inventory', form=form)
 
-@app.route('/inventory/addItem', methods=['POST'])
+@bp.route('/inventory/addItem', methods=['POST'])
 @login_required
 @requires_access_level(ACCESS['admin'])
 def addItem():
@@ -129,7 +130,7 @@ def addItem():
 
     return jsonify(item=item) # TODO Pass confirmation instead?
 
-@app.route('/inventory/<mode>-<item>', methods=['GET', 'POST'])
+@bp.route('/inventory/<mode>-<item>', methods=['GET', 'POST'])
 @login_required
 def inventoryItem(item, mode):
     """Returns item's inventory page.
@@ -146,11 +147,11 @@ def inventoryItem(item, mode):
         flash('Illegal mode: "' + mode + '" Contact administrator.', 'danger')
         app.logger.error('Illegal mode: "' + mode + '" Contact administrator.')
 
-        return redirect(url_for('inventory'))
+        return redirect(url_for('main.inventory'))
 
     return render_template('item.html', title=item, item=item, mode=mode, table=table)
 
-@app.route('/weighItem', methods=['GET', 'POST'])
+@bp.route('/weighItem', methods=['GET', 'POST'])
 @login_required
 def weighItem():
     """Returns json of weight of an item."""
@@ -200,7 +201,7 @@ def weighItem():
                 prematurely.', 'danger')
         app.logger.error('Session mode is not passed. Session is corrupt or navigated to prematurely.')
 
-        return redirect(url_for('inventory'))
+        return redirect(url_for('main.inventory'))
 
     else:
         flash('Illegal mode: "' + mode + '" Contact administrator.', 'danger')

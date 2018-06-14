@@ -3,7 +3,7 @@ This file handles HTTP standard response codes.
 """
 
 from flask import render_template, flash, redirect, url_for
-from app import app, db
+from app import db
 from app.errors import bp
 
 @bp.app_errorhandler(401)

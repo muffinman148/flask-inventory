@@ -4,7 +4,7 @@ This file handles the Views for the authentication system.
 
 from flask import render_template, flash, redirect, url_for, \
         request, jsonify, session, send_from_directory
-from app import app, db
+from app import db
 from app.auth.forms import LoginForm 
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User
@@ -33,7 +33,7 @@ def login():
         # Logs User into original inputted URL
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index')
+            next_page = url_for('main.index')
         return redirect(next_page)
 
     return render_template('auth/login.html', title='Sign In', form=form)

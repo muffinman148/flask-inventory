@@ -6,3 +6,5 @@ password.py
 .python-version
 venv3/
 testMail.py
+.env
+.flaskenv
