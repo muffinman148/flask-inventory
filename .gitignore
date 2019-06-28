@@ -2,6 +2,7 @@
 venv/
 logs/
 migrations/
+old-migrations/
 .python-version
 venv3/
 testMail.py
