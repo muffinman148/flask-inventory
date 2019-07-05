@@ -35,11 +35,16 @@ If you have pyenv installed:
 $ pyenv local 3.6.5
 ```
 
-Initialize virtualenv
+Initialize virtualenv for the first time
 ```sh
 $ python3 -m venv venv3
 $ source venv3/bin/activate 
 $ pip install -r requirements.txt
+```
+
+Otherwise, to start a virtualenv instance run:
+```sh
+$ source venv3/bin/activate
 ```
 
 Run the ``startup.py`` to input information relating to:
@@ -50,6 +55,17 @@ Run the ``startup.py`` to input information relating to:
 * ADMINS (Admin email)
 
 Note: This will create ``.env`` and ``.flaskenv`` that dotenv will hook into.
+
+### Database Setup
+
+The following commands will initialize the database adding all tables.
+```sh
+flask db init
+flask db migrate -m "All tables"
+flask db upgrade
+```
+
+### Running the Site
 
 Run the site.
 ```sh
