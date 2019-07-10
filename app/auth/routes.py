@@ -4,6 +4,7 @@ This file handles the Views for the authentication system.
 
 from flask import render_template, flash, redirect, url_for, \
         request, jsonify, session, send_from_directory
+from werkzeug.urls import url_parse
 from app import db
 from app.auth.forms import LoginForm 
 from flask_login import current_user, login_user, logout_user, login_required
