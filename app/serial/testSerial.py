@@ -4,7 +4,8 @@ import pprint
 # serialUSB = '/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_D-if00-port0'
 
 # Opens Serial Port
-ser = serial.Serial("/dev/ttyUSB0", 9600)  # 115200 baudrate ; open first serial port
+#  ser = serial.Serial("/dev/ttyUSB0", 9600)  # 115200 baudrate ; open first serial port
+ser = serial.Serial("/dev/tty.usbserial", 9600)  # 115200 baudrate ; open first serial port
 print("Connected to port: " + ser.portstr)       # check which port was really used
 
 # Clear Buffers
