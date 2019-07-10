@@ -9,3 +9,4 @@ testMail.py
 .env
 .flaskenv
 *.bak
+*.swp
