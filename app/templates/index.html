@@ -1,7 +1,14 @@
 {% extends "base.html" %}
 
+{% block head %}
+    {{ super() }} {# The following is appended to the "head" block. #}
+    {% if not config['DEBUG'] %}
+    <meta http-equiv="refresh" content="60" >
+    {% endif %}
+{% endblock %}
+
 {% block scripts %}
-{{ super() }}
+{{ super() }} {# The foolowing is appended to other "scripts" blocks. #}
 <script>
 $(document).ready(function() {
     // Separates Log file lines 
@@ -20,6 +27,35 @@ $(document).ready(function() {
                       .replace(/(ERROR)/, '<span class="error">$1</span>')
                       .replace(/(CRITICAL)/, '<span class="critical">$1</span>')
                       ;
+    });
+});
+
+$(function() {
+    $('a.updateProgress').bind('click', function() {
+        $.getJSON('/updateProgress', function(data) {
+            //currentprogress = parseInt($('div.progress-bar').attr('aria-valuenow'));
+            currentprogress = {{progress}};
+            newprogress = currentprogress + 20;
+            $('div.progress-bar').attr('aria-valuenow', newprogress).css('width', newprogress + "%");
+            console.log("Currentprogress shows slide-" + currentprogress);
+            $('#slide-' + currentprogress).attr('id', '#slide-' + newprogress);
+            $('.stage-header').html('Stage ' + newprogress);
+            location.reload();
+        });
+        return false;
+    });
+    $('a.startProgress').bind('click', function() {
+        $.getJSON('/startProgress', function(data) {
+            //currentprogress = parseInt($('div.progress-bar').attr('aria-valuenow'));
+            currentprogress = {{progress}};
+            newprogress = currentprogress + 20;
+            $('div.progress-bar').attr('aria-valuenow', newprogress).css('width', newprogress + "%");
+            console.log("Currentprogress shows slide-" + currentprogress);
+            $('#slide-' + currentprogress).attr('id', '#slide-' + newprogress);
+            $('.stage-header').html('Stage ' + newprogress);
+            location.reload();
+        });
+        return false;
     });
 });
 </script>
@@ -55,4 +91,57 @@ p {
     {% if current_user.is_admin() %}
         <pre>{{ logs }}</pre>
     {% endif %}
+    <h2>Inventory Status</h2>
+    <div class="progress">
+        <div class="progress-bar" 
+             role="progressbar" 
+             aria-valuenow="{{progress * 20}}" 
+             aria-valuemin="0" 
+             aria-valuemax="100" 
+             style="width:{{progress * 20}}%">
+        </div>
+    </div> 
+
+    <!--
+    <p><input type=text size=5 name=a> + <input type=text size=5 name=b> = <span id=result>?</span>
+    <p><a href="#" id="calculate">calculate server side</a>
+    -->
+
+    <div id="slide-{{progress}}">
+    {% if progress == 0 %}
+        <a href="#" class="btn btn-default startProgress">Start Inventory</a>
+    {% elif progress == 1 %}
+        <h3 class="stage-header">Stage {{progress}}</h3>
+
+        <div><p>After inventory is frozen, perform the following:</p>
+            <p>Transfer the Item data from Sage to the MySQL database by browsing to: </p></div>
+        <div><a class="btn btn-info" 
+                href="http://po.amemorials.com/Inv_CI_Item.php" 
+                target="_blank">Inv_CI_Item</a></div>
+
+        <div><p>Transfer the Physical Count data from Sage to the MySQL database by browsing to:</p> </div>
+        <div><a class="btn btn-info"
+                href="http://po.amemorials.com/Inv_IM_Physical.php"
+                target="_blank">Inv_IM_Physical</a></div>
+
+        <div><a href="#" class="btn btn-default updateProgress">Next</a></div>
+    {% elif progress == 2 %}
+        <h3 class="stage-header">Stage {{progress}}</h3>
+
+        <div><p>INV1 SQL should have run by now</p></div>
+        <div><p>Scan and weigh items using the cart.</p></div>
+
+        <div><a href="#" class="btn btn-default updateProgress">Next</a></div>
+    {% elif progress == 3 %}
+        <h3 class="stage-header">Stage {{progress}}</h3>
+
+        <div><p>INV2 and INV3 SQL should have run by now</p></div>
+        <div><p>Copy and Paste to print. (Button?)</p></div>
+
+        <div><a href="#" class="btn btn-default updateProgress">Next</a></div>
+    {% elif progress == 4 %}
+    {% elif progress == 5 %}
+    {% endif %}
+    </div>
+
 {% endblock %}

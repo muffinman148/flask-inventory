@@ -250,3 +250,21 @@ class Items(db.Model): # rpi_inv_ci_item
     TotalInventoryValue = db.Column(db.DECIMAL(14,2))
     InactiveItem = db.Column(db.String(1))
     LastPhysicalCountDate = db.Column(db.Date)
+
+class Inventory(db.Model):
+    """Defines an "Inventory" table
+
+    Args:
+        db.Model: Baseclass for all SQLAlchemy instances.
+    """
+
+    inventoryID = db.Column(db.Integer, primary_key=True,  autoincrement=True)
+    user = db.Column(db.Integer, db.ForeignKey('user.id'))
+    currentState = db.Column(db.Integer)
+    beginDate = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    endDate = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+    def __repr__(self):
+        """Displays inventory begin date."""
+
+        return '<Inventory begin date {} is currently in state {}.>'.format(self.beginDate, self.currentState)
