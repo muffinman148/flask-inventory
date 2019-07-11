@@ -64,6 +64,7 @@ flask db init
 flask db migrate -m "All tables"
 flask db upgrade
 ```
+Note: If you get an error that looks like "ERROR [root] Error: Can't locate revision identified by 'e3bdd7c38bc3'", this is because you have an old 'alembic_version' table. Simply remove the table and the migrations folder. Then start the database initialization again. [Further Reading.](https://stackoverflow.com/questions/32311366/alembic-util-command-error-cant-find-identifier)
 
 ### Running the Site
 
