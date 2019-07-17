@@ -19,8 +19,15 @@ import logging
 from logging.handlers import RotatingFileHandler
 from app.main import bp
 from datetime import date
+import subprocess
 
+# TODO Fix the following hack.
+# The app needs to be called for logging to work, but will add multiple
+# handlers. If different handlers are added/used in the future, you can change
+# the 'app.logger.handlers.pop()' to 'app.logger.removeHandlers($INSERT_HANDLER)'
 app = create_app()
+while app.logger.handlers:
+         app.logger.handlers.pop()
 
 @bp.route('/favicon.ico') 
 def favicon(): 
@@ -42,7 +49,9 @@ def index():
 
     state = Inventory.query.filter(Inventory.beginDate, Inventory.endDate == None).first()
 
-    if state:
+    if request.method == 'POST':
+        flash("Progress has updated to: " + str(progress), "info")
+    elif state:
         progress = state.currentState
     else:
         progress = 0
@@ -60,20 +69,20 @@ def updateProgress():
 
     if state:
         progress = state.currentState
-        if progress <= 5: # Continue to next Inventory Stage
+        progress += 1 # Advance Inventory Stage
 
-            progress += 1 # Advance Inventory Stage
+        if progress <= 4: # Continue to next Inventory Stage
 
             if progress == 2: # Clear Database
                 flash("TODO Finish Clear Database")
                 # Do the Following SQL: INV1
 
                 # Raw SQL Test
-                with engine.connect() as con:
-                    rs = con.execute('SELECT * FROM items')
+                #  with engine.connect() as con:
+                #      rs = con.execute('SELECT * FROM items')
 
-                    for row in rs:
-                        print row
+                #      for row in rs:
+                #          print row
 
                 #  UPDATE Node_RPI_InvCount SET InvDate = NULL, TotalPieces = 0;
                 #  DELETE FROM `Node_RPI_InvCount` WHERE TotalPieces = 0 AND
@@ -148,22 +157,41 @@ def updateProgress():
 
                 # TODO Potentially add api to interface with SAGE
 
+            state.currentState = progress
             db.session.commit()
-            app.logger.info('"' + str(current_user.username) + '"' +
-                    " has continued inventory to stage " + str(progress) + " at " + str(date.today()))
+            app.logger.info("%s has continued inventory to stage %s at %s.", 
+                    current_user.username, progress, date.today())
 
-        elif progress > 5: # End Inventory
+        elif progress > 4: # End Inventory
+            state.currentState = progress
             state.endDate = date.today()
             db.session.commit()
-            app.logger.info('User "' + str(current_user.username) + '"' +
-                    " has closed Inventory at " + str(state.endDate))
-    else:
+            app.logger.info('User "%s" has closed Inventory at %s.',
+                    current_user.username, state.endDate)
+
+    else: # State is undefined
         flash("Failure to find latest Inventory.", "error")
 
+        return redirect(url_for('errors.internal_error'))
 
     return jsonify(progress=progress)
 
-@bp.route('/startInventory', methods=['GET', 'POST'])
+@bp.route('/clearLogs', methods=['GET', 'POST'])
+@login_required
+@requires_access_level(ACCESS['admin'])
+def clearLogs():
+    """Clears current logs."""
+
+    p = subprocess.Popen(["> logs/inventory.log"], shell=True, stdout=subprocess.PIPE)
+    if p.returncode != 0:
+        # TODO Finish this error flashing for user
+        flash("Logs could not be cleared.", "error")
+
+        return jsonify(success=False)
+
+    return jsonify(success=True)
+
+@bp.route('/startProgress', methods=['GET', 'POST'])
 @login_required
 @requires_access_level(ACCESS['admin'])
 def startProgress():
@@ -177,8 +205,8 @@ def startProgress():
     db.session.add(newInventory)
     db.session.commit()
 
-    app.logger.info('"' + str(current_user.username) + '"' + " has started inventory at " + 
-            str(date.today()))
+    app.logger.info("%s has started inventory at %s.",
+            current_user.username, date.today())
 
     print("TODO Finish Clear Database")
     # Do the Following SQL: INV1
@@ -188,7 +216,7 @@ def startProgress():
     #  (PieceWeight = 0 OR PieceWeight = NULL);
 
 
-    return jsonify(progress=progress)
+    return jsonify(success=True)
 
 @bp.route('/printLabel', methods=['GET', 'POST'])
 @login_required
@@ -208,8 +236,10 @@ def printLabel():
             flash('Printing Label ' + form.itemCode.data + '.' + item.ItemCodeDesc, 'success')
             if os.environ['FLASK_ENV'] != 'development':
                 pl.sendPrintData(item)
-            app.logger.info('"' + str(current_user.username) + '"' + ' has printed a label for item ' + 
-                    form.itemCode.data + ' has been printed.')
+            #  app.logger.info('"' + str(current_user.username) + '"' + ' has printed a label for item ' + 
+            #          form.itemCode.data + ' has been printed.')
+            app.logger.info('%s has printed a label for item %s has been printed.',
+                    current_user.username, form.itemCode.data)
 
     return render_template('printLabel.html', title='Print Labels', form=form)
 
@@ -227,8 +257,10 @@ def inventory():
     if "submit" in request.form: # Checks form submission syntax validity
         item = Items.query.filter_by(ItemCode=form.itemCode.data).first()
         measurement = Measurements.query.filter_by(partNumber=form.itemCode.data).first()
-        app.logger.info('"' + str(current_user.username) + '"' + " prepping weighing of item " + 
-                form.itemCode.data)
+        #  app.logger.info('"' + str(current_user.username) + '"' + " prepping weighing of item " + 
+        #          form.itemCode.data)
+        app.logger.info("%s prepping weighing of item %s.",
+                current_user.username, form.itemCode.data)
 
         # Checks if part number field is correct
         if item is None: # No input for the field
@@ -246,8 +278,10 @@ def inventory():
             newMeasurement = Measurements(partNumber=form.itemCode.data)
             db.session.add(newMeasurement)
             db.session.commit()
-            app.logger.info('"' + str(current_user.username) + '"' + " created new measurement for item: " + 
-                    form.itemCode.data)
+            #  app.logger.info('"' + str(current_user.username) + '"' + " created new measurement for item: " + 
+            #          form.itemCode.data)
+            app.logger.info("%s created new measurement for item: %s",
+                    current_user.username, form.itemCode.data)
 
         elif measurement.tareWeight == 0 or measurement.tareWeight is None: # Measurement and previous tareWeight exists
             flash('Place empty container on scale.', 'info')
@@ -276,11 +310,15 @@ def addItem():
         newItem = Items(ItemCode=item)
         db.session.add(newItem)
         db.session.commit()
-        app.logger.info('"' + str(current_user.username) + '"' + ' has add item ' + 
-                form.itemCode.data + ' to the Items table.')
+        #  app.logger.info('"' + str(current_user.username) + '"' + ' has add item ' + 
+        #          form.itemCode.data + ' to the Items table.')
+        app.logger.info("%s has add item %s to the Items table. ",
+                current_user.username, form.itemCode.data)
     else:
-        app.logger.info('"' + str(current_user.username) + '"' + ' was not able add item ' + 
-                form.itemCode.data + ' to the Items table.')
+        #  app.logger.info('"' + str(current_user.username) + '"' + ' was not able add item ' + 
+        #          form.itemCode.data + ' to the Items table.')
+        app.logger.info("%s was not able to add item %s to the Items table. ",
+                current_user.username, form.itemCode.data)
         return internal_error(item)
 
     return jsonify(item=item) # TODO Pass confirmation instead?
@@ -300,7 +338,9 @@ def inventoryItem(item, mode):
         table = MeasurementsTable(Measurements.query.filter_by(partNumber=item))
     else: # Illegal mode passed
         flash('Illegal mode: "' + mode + '" Contact administrator.', 'danger')
-        app.logger.error('Illegal mode: "' + mode + '" Contact administrator.')
+        #  app.logger.error('Illegal mode: "' + mode + '" Contact administrator.')
+        app.logger.error('Illegal mode: "%s" Contact administrator.', 
+                mode)
 
         return redirect(url_for('main.inventory'))
 
@@ -334,8 +374,10 @@ def weighItem():
         measurementObject.tareWeight = weight
         db.session.commit()
         session['mode'] = 'count'
-        app.logger.info('"' + str(current_user.username) + '"' + ' is taring ' + 
-                str(item) + ' with container weight of: ' + str(weight))
+        #  app.logger.info('"' + str(current_user.username) + '"' + ' is taring ' + 
+        #          str(item) + ' with container weight of: ' + str(weight))
+        app.logger.info("%s is taring %s with container weight of: %s",
+                current_user.username, item, weight)
 
     # Count Conditions 
     # ----------------
@@ -348,8 +390,10 @@ def weighItem():
         # totalWeight=-tareWeight
         measurementObject.totalWeight -= float(measurementObject.tareWeight)
         db.session.commit()
-        app.logger.info('"' + str(current_user.username) + '"' + ' has counted ' + 
-                str(item) + ' with a count of ' + str(weight))
+        #  app.logger.info('"' + str(current_user.username) + '"' + ' has counted ' + 
+        #          str(item) + ' with a count of ' + str(weight))
+        app.logger.info("%s has counted %s with a count of %s.",
+                current_user.username, item, weight)
 
     elif mode is None:
         flash('Session mode is not passed. Session is corrupt or navigated to\
@@ -361,6 +405,8 @@ def weighItem():
     else:
         flash('Illegal mode: "' + mode + '" Contact administrator.', 'danger')
         db.session.rollback()
-        app.logger.error('Illegal mode: "' + mode + '" Contact administrator.')
+        #  app.logger.error('Illegal mode: "' + mode + '" Contact administrator.')
+        app.logger.error('Illegal mode: "%s" Contact administrator.', 
+                mode)
 
     return jsonify(weight=weight)
