@@ -3,7 +3,7 @@
 Many companies perform inventory counts on a monthly basis. This is primarily conducted by one or more employee’s to cultivate a number of inventory stock left after the previous inventory period. Some companies opt to record inventory as it is used, while others will adopt the approach of recording inventory for a given period. Our goal as a software team is develop a product that will allow a company to record inventory on a monthly basis with high efficiency and accuracy. We would like to eliminate as much human error as possible by offloading the counting method off onto a scale and computer. We believe that this would best be achieved through the use of low cost technology, such as: Raspberry Pi, scale and barcode reader. We can implement a system that will quickly identify a product and using previously recorded weights provide an accurate count. 
 
 ## Background
-This is a project for CSUSM's CS 441 Software Engineering class. I will be continuing development through the summer.
+This is a project for CSUSM's CS 441 Software Engineering class. The project is now maintained by Rayzist Photomask who will continue development when possible.
 
 ## Setup
 
@@ -78,6 +78,15 @@ Run the site.
 - [X] User Administration
 - [X] Label Printing (with Brother QL-720NW)
 - [X] Scale Reading (Partially working)
+
+
+### Future Plans
+* Create serial/async communication with any printer: [sockets](https://blog.miguelgrinberg.com/post/easy-websockets-with-flask-and-gevent/page/8)
+* Create Graphs/Charts/Metrics of Inventory pieces on hand (show what pieces are being used in excess vs. not at all)
+* Searchable parts shown with photographs of each part (project currently being worked on external to this project)
+    * [elasticsearch](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xvi-full-text-search) is a potential option
+* Containerize service and run on server
+    * Docker is an option here that is covered by [Grinberg](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xix-deployment-on-docker-containers)
 
 ## Resources
 * [Flask](http://flask.pocoo.org/)
