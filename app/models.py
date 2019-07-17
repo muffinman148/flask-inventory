@@ -262,7 +262,7 @@ class Inventory(db.Model):
     user = db.Column(db.Integer, db.ForeignKey('user.id'))
     currentState = db.Column(db.Integer)
     beginDate = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    endDate = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    endDate = db.Column(db.DateTime, index=True)
 
     def __repr__(self):
         """Displays inventory begin date."""
