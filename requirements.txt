@@ -22,7 +22,7 @@ MarkupSafe==1.1.1
 mysqlclient==1.4.2.post1
 numpy==1.16.4
 pprint==0.1
-PyJWT==1.7.1
+PyJWT==2.4.0
 pyserial==3.4
 python-dateutil==2.8.0
 python-dotenv==0.10.3
